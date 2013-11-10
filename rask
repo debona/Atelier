@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+
+require 'active_support'
+require 'active_support/core_ext'
+
+def library_file
+  ARGV[0]
+end
+
+parameters = Array.new(ARGV)
+parameters.shift
+
+load(library_file)
+
+library_name = File.basename(library_file, '.rb')
+
+library = library_name.camelize.constantize.new
+
+library.send(*parameters)
