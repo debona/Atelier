@@ -10,10 +10,31 @@ end
 parameters = Array.new(ARGV)
 parameters.shift
 
+class Library
+
+  def initialize(name, &block)
+    instance_eval &block
+  end
+
+  def action(action_name, &block)
+    (class << self; self; end).send(:define_method, action_name, &block)
+  end
+
+end
+
+
+
+@libraries = {}
+
+def library(name, &block)
+  @libraries[name] = Library.new(name, &block)
+end
+
+
+
+
 load(library_file)
 
 library_name = File.basename(library_file, '.rb')
 
-library = library_name.camelize.constantize.new
-
-library.send(*parameters)
+@libraries[library_name.camelize.to_sym].send(*parameters)
