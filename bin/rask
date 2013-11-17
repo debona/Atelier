@@ -1,40 +1,18 @@
 #!/usr/bin/env ruby
 
-require 'active_support'
-require 'active_support/core_ext'
+require 'rask'
 
-def library_file
-  ARGV[0]
-end
+library_file = ARGV[0]
 
 parameters = Array.new(ARGV)
 parameters.shift
 
-class Library
+app = Rask::Application.new()
 
-  def initialize(name, &block)
-    instance_eval &block
-  end
-
-  def action(action_name, &block)
-    (class << self; self; end).send(:define_method, action_name, &block)
-  end
-
+Kernel.send(:define_method, :library) do |name, &block|
+  app.load(name, &block)
 end
-
-
-
-@libraries = {}
-
-def library(name, &block)
-  @libraries[name] = Library.new(name, &block)
-end
-
-
-
 
 load(library_file)
 
-library_name = File.basename(library_file, '.rb')
-
-@libraries[library_name.camelize.to_sym].send(*parameters)
+app.run(*parameters)
