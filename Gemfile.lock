@@ -1,20 +1,14 @@
 GEM
   remote: http://rubygems.org/
   specs:
-    active_support (3.0.0)
-      activesupport (= 3.0.0)
-    activesupport (3.0.0)
     byebug (2.3.1)
       columnize (~> 0.3.6)
       debugger-linecache (~> 1.2.0)
     columnize (0.3.6)
     debugger-linecache (1.2.0)
-    i18n (0.6.5)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  active_support
   byebug
-  i18n
