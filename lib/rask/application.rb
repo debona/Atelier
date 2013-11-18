@@ -4,6 +4,8 @@ module Rask
 
   class Application
 
+    attr_reader :libraries
+
     def initialize
       @libraries = {}
     end
