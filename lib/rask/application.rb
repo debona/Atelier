@@ -1,3 +1,4 @@
+require 'singleton'
 require 'rask/library'
 
 module Rask
@@ -5,6 +6,7 @@ module Rask
   class Application
 
     attr_reader :libraries
+    include Singleton
 
     def initialize
       @libraries = {}
