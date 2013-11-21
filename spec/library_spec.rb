@@ -3,11 +3,15 @@ require 'rask/library'
 describe Rask::Library do
 
   describe '#initialize' do
-
     context 'without any parameters' do
-      subject { Rask::Library.new(:TestLibrary) {} }
+      specify { expect { Rask::Library.new() {} }.to raise_error ArgumentError }
+    end
 
-      its(:methods) { should == Object.new.methods }
+    context 'providing name' do
+      name = :LibName
+      subject { Rask::Library.new(name) {} }
+
+      its(:name) { should == name }
     end
 
     context 'providing actions' do
