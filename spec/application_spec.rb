@@ -6,6 +6,7 @@ describe Rask::Application do
     subject { Rask::Application.instance }
 
     its(:libraries) { should == {} }
+    its(:logger) { should be_a Logger }
   end
 
   describe '#load' do
@@ -26,6 +27,7 @@ describe Rask::Application do
       it { should be_a Rask::Library }
     end
 
+    # TODO : loading a lib with a same name should display a warning on stderr
   end
 
   describe '#run' do

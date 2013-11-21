@@ -1,15 +1,19 @@
 require 'singleton'
+require 'logger'
 require 'rask/library'
 
 module Rask
 
   class Application
 
-    attr_reader :libraries
     include Singleton
+
+    attr_reader :libraries, :logger
 
     def initialize
       @libraries = {}
+      @logger = Logger.new(STDERR)
+      @logger.level = Logger::WARN
     end
 
     def load(name, &block)
