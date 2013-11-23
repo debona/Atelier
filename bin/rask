@@ -9,9 +9,6 @@ parameters.shift
 
 app = Rask::Application.instance
 
-Kernel.send(:define_method, :library) do |name, &block|
-  app.load(name, &block)
-end
 
 load(library_file)
 

@@ -16,9 +16,13 @@ module Rask
       @library = nil
       @logger = Logger.new(STDERR)
       @logger.level = Logger::WARN
+
+      Kernel.send(:define_method, :library) do |name, &block|
+        Application.instance.load_library(name, &block)
+      end
     end
 
-    def load(name, &block)
+    def load_library(name, &block)
       @library = @factory.create(name, &block)
     end
 

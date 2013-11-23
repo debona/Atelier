@@ -7,12 +7,23 @@ describe Rask::Application do
   describe '#instance' do
     its(:library) { should be_nil }
     its(:logger) { should be_a Logger }
+
+    describe 'its side-effects' do
+      it 'Kernel methods should include :library' do
+        Kernel.methods.should include :library
+      end
+
+      it 'library should redirect to the app load_library method' do
+        @app.should_receive(:load_library).with(:name)
+        Kernel.library(:name) {}
+      end
+    end
   end
 
-  describe '#load' do
+  describe '#load_library' do
     name = :lib_name
 
-    before(:all) { @app.load(name) {} }
+    before(:all) { @app.load_library(name) {} }
     subject { @app.library }
 
     it { should be_a Rask::Library }
