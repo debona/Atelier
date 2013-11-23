@@ -5,7 +5,7 @@ describe Rask::Application do
   describe '#instance' do
     subject { Rask::Application.instance }
 
-    its(:libraries) { should == {} }
+    its(:library) { should be_nil }
     its(:logger) { should be_a Logger }
   end
 
@@ -16,35 +16,31 @@ describe Rask::Application do
       @app = Rask::Application.instance
       @app.load(name) {}
     end
-    subject { @app }
 
-    its(:libraries) { should have(1).item }
-    its(:libraries) { should include ( name ) }
+    subject { @app.library }
 
-    describe 'loaded library' do
-      subject { @app.libraries[name] }
-
-      it { should be_a Rask::Library }
-    end
-
-    # TODO : loading a lib with a same name should display a warning on stderr
+    it { should be_a Rask::Library }
+    its(:name) { should == name }
   end
 
   describe '#run' do
-    action_name     = :action_name
-    parameter       = :param
-    expected_result = [parameter]
+    context 'with an existing action' do
+      action_name     = :action_name
+      parameter       = :param
+      expected_result = [parameter]
 
-    before(:all) do
-      @app = Rask::Application.instance
-      @app.load(:lib_name) { action(action_name) { |*params| params } }
+      before(:all) do
+        @app = Rask::Application.instance
+        @app.library = Rask::Library.new(:lib_name)
+      end
+      subject do
+        @app.library.stub(action_name) { |*params| params }
+        @app.run(action_name.to_s, parameter)
+      end
+
+      it { should be_a Array }
+      it { should == expected_result }
     end
-    subject { @app.run(action_name.to_s, parameter) }
-
-    it { should be_a Array }
-    it { should == expected_result }
-
-    # TODO : should display a clear message on stderr if the lib and/or action does not exist
   end
 
 end
