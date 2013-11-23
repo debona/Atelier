@@ -1,10 +1,10 @@
 require 'rask/application'
 
 describe Rask::Application do
+  before(:all) { @app = Rask::Application.instance }
+  subject { @app }
 
   describe '#instance' do
-    subject { Rask::Application.instance }
-
     its(:library) { should be_nil }
     its(:logger) { should be_a Logger }
   end
@@ -12,11 +12,7 @@ describe Rask::Application do
   describe '#load' do
     name = :lib_name
 
-    before(:all) do
-      @app = Rask::Application.instance
-      @app.load(name) {}
-    end
-
+    before(:all) { @app.load(name) {} }
     subject { @app.library }
 
     it { should be_a Rask::Library }
@@ -29,9 +25,6 @@ describe Rask::Application do
       parameter       = :param
       expected_result = [parameter]
 
-      before(:all) do
-        @app = Rask::Application.instance
-      end
       subject do
         @app.library.stub(action_name) { |*params| params }
         @app.run(action_name.to_s, parameter)
@@ -43,9 +36,8 @@ describe Rask::Application do
 
     context 'with wrong action' do
       it 'should display an error' do
-        app = Rask::Application.instance
-        app.logger.should_receive(:error)
-        app.run('wrong action', 'param1', 'param2')
+        @app.logger.should_receive(:error)
+        @app.run('wrong action', 'param1', 'param2')
       end
     end
   end

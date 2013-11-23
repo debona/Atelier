@@ -2,7 +2,6 @@ require 'singleton'
 require 'logger'
 
 require 'rask/factory'
-require 'rask/library'
 
 module Rask
 
