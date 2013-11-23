@@ -2,14 +2,4 @@
 
 require 'rask'
 
-library_file = ARGV[0]
-
-parameters = Array.new(ARGV)
-parameters.shift
-
-app = Rask::Application.instance
-
-
-load(library_file)
-
-app.run(*parameters)
+app = Rask::Application.instance.run(*ARGV)

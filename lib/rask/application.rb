@@ -26,8 +26,16 @@ module Rask
       @library = @factory.create(name, &block)
     end
 
-    def run(*parameters)
-      library.send(*parameters)
+    def send_action(action, *parameters)
+      library.send(action, *parameters)
+    rescue Exception => e
+      logger.error e
+    end
+
+    def run(library_file, action, *parameters)
+      load(library_file)
+
+      send_action(action, *parameters)
     rescue Exception => e
       logger.error e
     end
