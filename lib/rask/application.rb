@@ -25,6 +25,8 @@ module Rask
 
     def run(*parameters)
       library.send(*parameters)
+    rescue Exception => e
+      logger.error e
     end
 
   end

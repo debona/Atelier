@@ -31,7 +31,6 @@ describe Rask::Application do
 
       before(:all) do
         @app = Rask::Application.instance
-        @app.library = Rask::Library.new(:lib_name)
       end
       subject do
         @app.library.stub(action_name) { |*params| params }
@@ -40,6 +39,14 @@ describe Rask::Application do
 
       it { should be_a Array }
       it { should == expected_result }
+    end
+
+    context 'with wrong action' do
+      it 'should display an error' do
+        app = Rask::Application.instance
+        app.logger.should_receive(:error)
+        app.run('wrong action', 'param1', 'param2')
+      end
     end
   end
 
