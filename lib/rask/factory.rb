@@ -15,8 +15,13 @@ module Rask
     def library(lib_name, &block)
       library = Factory.new.create(lib_name, &block)
       @lib.instance_eval { @libraries[lib_name] = library }
-      method(lib_name) { library }
-      library
+      method(lib_name) do |*args|
+        if args.empty?
+          library
+        else
+          library.send(*args)
+        end
+      end
     end
 
     def action(action_name, &block)
