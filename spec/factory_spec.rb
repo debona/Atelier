@@ -23,47 +23,38 @@ describe Rask::Factory do
   end
 
   describe '#method' do
-    method_proc = Proc.new { :result }
     before(:all) do
       @lib = @factory.create(:lib_name) {}
-      @factory.send(:method, :method_name, &method_proc)
+      @factory.send(:method, :method_name) {}
     end
     subject { @lib }
 
     its(:methods) { should include :method_name }
-    its(:method_name) { should == method_proc.call }
   end
 
   describe '#action' do
     context 'with trivial value' do
-      action_proc = Proc.new { :result }
-      before(:all) do
-        @lib = @factory.create(:lib_name) {}
-        @factory.send(:action, :action_one, &action_proc)
-      end
-
-      subject { @lib }
-
-      its(:methods) { should include :action_one }
-      its(:action_one) { should == action_proc.call }
-    end
-
-    context 'with an already given action name' do
-      expected_result = :expected_result
       before(:all) do
         @lib = @factory.create(:lib_name) {}
         @factory.send(:action, :action_one) {}
-        @factory.send(:action, :action_one) { expected_result }
       end
-
       subject { @lib }
 
-      it 'should display a warning' do
-        Rask::Application.instance.logger.should_receive(:warn)
-        @factory.send(:action, :action_one) { expected_result }
-      end
+      its(:methods) { should include :action_one }
+    end
 
-      its(:action_one) { expected_result }
+    context 'with an already given action name' do
+      before do
+        @lib = @factory.create(:lib_name) {}
+        @factory.send(:action, :action_one) { :original_result }
+      end
+      subject { @lib }
+
+      it 'should override the action with a warning' do
+        Rask::Application.instance.logger.should_receive(:warn)
+        @factory.send(:action, :action_one) { :overriden_result }
+        subject.action_one.should == :overriden_result
+      end
     end
   end
 

@@ -1,18 +1,29 @@
 require 'rask/library'
+require 'rask/factory'
 
 describe Rask::Library do
 
   describe '#initialize' do
-    context 'without any parameters' do
-      specify { expect { Rask::Library.new() {} }.to raise_error ArgumentError }
-    end
+    subject { Rask::Library.new(:lib_name) }
+    its(:name) { should == :lib_name }
+  end
 
-    context 'providing name' do
-      name = :LibName
-      subject { Rask::Library.new(name) {} }
-
-      its(:name) { should == name }
+  describe 'actions' do
+    before(:all) do
+      @lib = Rask::Factory.new.create(:lib_name) { action(:action_name) { :expected_result } }
     end
+    subject { @lib }
+
+    its(:action_name) { should == :expected_result }
+  end
+
+  describe 'methods' do
+    before(:all) do
+      @lib = Rask::Factory.new.create(:lib_name) { method(:method_name) { :expected_result } }
+    end
+    subject { @lib }
+
+    its(:method_name) { should == :expected_result }
   end
 
 end
