@@ -6,7 +6,7 @@ describe Rask::Factory do
   before(:all) { @factory = Rask::Factory.new }
   subject { @factory }
 
-  describe '#create' do
+  describe '.create' do
     context 'without any parameters' do
       specify { expect { @factory.create() {} }.to raise_error ArgumentError }
     end
@@ -20,6 +20,18 @@ describe Rask::Factory do
       subject { @factory.create(:lib_name) { action(:action_name) {} } }
       its(:methods)                { should include :action_name }
     end
+  end
+
+  describe '#method' do
+    method_proc = Proc.new { :result }
+    before(:all) do
+      @lib = @factory.create(:lib_name) {}
+      @factory.send(:method, :method_name, &method_proc)
+    end
+    subject { @lib }
+
+    its(:methods) { should include :method_name }
+    its(:method_name) { should == method_proc.call }
   end
 
   describe '#action' do

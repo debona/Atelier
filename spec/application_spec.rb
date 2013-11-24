@@ -4,7 +4,7 @@ describe Rask::Application do
   before(:all) { @app = Rask::Application.instance }
   subject { @app }
 
-  describe '#instance' do
+  describe '.instance' do
     its(:library) { should be_nil }
     its(:logger) { should be_a Logger }
 
