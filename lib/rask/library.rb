@@ -7,6 +7,12 @@ module Rask
 
     def initialize(name)
       @name = name
+      @libraries = {}
+    end
+
+    def libraries
+      @libraries.each { |key, value| puts key }
+      @libraries
     end
 
   end

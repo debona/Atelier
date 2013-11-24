@@ -1,18 +1,59 @@
 require 'rask/library'
+require 'rask/factory'
 
 describe Rask::Library do
 
   describe '#initialize' do
-    context 'without any parameters' do
-      specify { expect { Rask::Library.new() {} }.to raise_error ArgumentError }
+    subject { Rask::Library.new(:lib_name) }
+    its(:name) { should == :lib_name }
+  end
+
+  describe 'actions' do
+    before(:all) do
+      @lib = Rask::Factory.new.create(:lib_name) { action(:action_name) { :expected_result } }
+    end
+    subject { @lib }
+
+    its(:action_name) { should == :expected_result }
+  end
+
+  describe 'methods' do
+    before(:all) do
+      @lib = Rask::Factory.new.create(:lib_name) { method(:method_name) { :expected_result } }
+    end
+    subject { @lib }
+
+    its(:method_name) { should == :expected_result }
+  end
+
+  describe 'libraries' do
+    before(:all) do
+      @lib = Rask::Factory.new.create(:lib_name) do
+        library(:sub_lib_name) { method(:sub_method) { :expected_result } }
+      end
     end
 
-    context 'providing name' do
-      name = :LibName
-      subject { Rask::Library.new(name) {} }
+    describe 'its libraries' do
+      subject { @lib.libraries }
 
-      its(:name) { should == name }
+      it { should have(1).item }
+      its([:sub_lib_name]) { should be_a Rask::Library }
     end
+
+    describe '#sub_lib_name' do
+      subject { @lib }
+
+      context 'without parameters' do
+        its(:sub_lib_name) { should be_a Rask::Library }
+      end
+
+      context 'with parameters' do
+        it 'should chain the messages and return the result' do
+          subject.sub_lib_name(:sub_method).should == :expected_result
+        end
+      end
+    end
+
   end
 
 end
