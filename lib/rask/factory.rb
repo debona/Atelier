@@ -12,6 +12,13 @@ module Rask
 
     private
 
+    def library(lib_name, &block)
+      library = Factory.new.create(lib_name, &block)
+      @lib.instance_eval { @libraries[lib_name] = library }
+      method(lib_name) { library }
+      library
+    end
+
     def action(action_name, &block)
       Application.instance.logger.warn "The method '#{action_name}' is overridden by your provided action" if @lib.methods.include?(action_name.to_sym)
       method(action_name, &block)

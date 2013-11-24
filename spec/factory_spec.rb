@@ -67,4 +67,16 @@ describe Rask::Factory do
     end
   end
 
+  describe '#library' do
+    before(:all) do
+      @lib = @factory.create(:lib_name) {}
+      @factory.send(:library, :sub_lib_name) {}
+    end
+
+    subject { @lib.send(:sub_lib_name) }
+
+    it { should be_a Rask::Library }
+    its(:name)    { should == :sub_lib_name }
+  end
+
 end

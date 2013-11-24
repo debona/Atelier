@@ -7,6 +7,7 @@ module Rask
 
     def initialize(name)
       @name = name
+      @libraries = {}
     end
 
   end
