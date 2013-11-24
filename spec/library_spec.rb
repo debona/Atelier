@@ -34,7 +34,7 @@ describe Rask::Library do
     end
 
     describe 'its libraries' do
-      subject { @lib.instance_eval { @libraries } }
+      subject { @lib.libraries }
 
       it { should have(1).item }
       its([:sub_lib_name]) { should be_a Rask::Library }
