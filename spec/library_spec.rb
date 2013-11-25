@@ -15,6 +15,13 @@ describe Rask::Library do
     subject { @lib }
 
     its(:action_name) { should == :expected_result }
+
+    describe 'its actions' do
+      subject { @lib.actions }
+
+      it { should_not be_empty }
+      its([:action_name]) { should be_a Proc }
+    end
   end
 
   describe 'methods' do

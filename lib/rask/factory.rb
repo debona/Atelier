@@ -26,6 +26,7 @@ module Rask
 
     def action(action_name, &block)
       Application.instance.logger.warn "The method '#{action_name}' is overridden by your provided action" if @lib.methods.include?(action_name.to_sym)
+      @lib.instance_eval { @actions[action_name] = block }
       method(action_name, &block)
     end
 
