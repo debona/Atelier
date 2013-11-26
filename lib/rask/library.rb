@@ -1,17 +1,21 @@
+require 'rask/library_dsl'
 
 module Rask
 
   class Library
 
+    include LibraryDSL
+
     attr_reader :name
 
-    def initialize(name)
+    def initialize(name, &block)
       @name = name
       @libraries = {}
       @actions = {
         libraries: :default,
         actions: :default
       }
+      instance_eval &block
     end
 
     def libraries
