@@ -7,6 +7,20 @@ describe Rask::LibraryDSL do
   before(:all) { @library = Object.new.extend Rask::LibraryDSL }
   subject { @library }
 
+  describe 'attributes' do
+    [
+      :title,
+      :description
+    ].each do |attr_name|
+      describe "##{attr_name}" do
+        value = "This is the #{attr_name} value"
+        before { @library.send("#{attr_name}=", value) }
+
+        its(attr_name) { should == value }
+      end
+    end
+  end
+
   describe '#method' do
     before(:all) do
       @library = Object.new.extend Rask::LibraryDSL

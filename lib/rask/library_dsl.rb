@@ -4,7 +4,15 @@ module Rask
 
   module LibraryDSL
 
+    attr_reader :title, :description
+
     private
+
+    attr_writer :title, :description
+
+    def method(name, &block)
+      (class << self; self; end).send(:define_method, name, &block)
+    end
 
     def library(lib_name, &block)
       @libraries ||= {}
@@ -24,10 +32,6 @@ module Rask
       Application.instance.logger.warn "The method '#{action_name}' is overridden by your provided action" if methods.include?(action_name.to_sym)
       @actions[action_name] = block
       method(action_name, &block)
-    end
-
-    def method(name, &block)
-      (class << self; self; end).send(:define_method, name, &block)
     end
 
   end
