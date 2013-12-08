@@ -1,7 +1,7 @@
 require 'singleton'
 require 'logger'
 
-require 'rask/factory'
+require 'rask/library'
 
 module Rask
 
@@ -12,7 +12,6 @@ module Rask
     attr_reader :library, :logger
 
     def initialize
-      @factory = Factory.new
       @library = nil
       @logger = Logger.new(STDERR)
       @logger.level = Logger::WARN
@@ -23,7 +22,7 @@ module Rask
     end
 
     def load_library(name, &block)
-      @library = @factory.create(name, &block)
+      @library = Library.new(name, &block)
     end
 
     def send_action(action, *parameters)

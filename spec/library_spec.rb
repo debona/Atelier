@@ -1,25 +1,33 @@
 require 'rask/library'
-require 'rask/factory'
 
 describe Rask::Library do
 
   describe '#initialize' do
-    subject { Rask::Library.new(:lib_name) }
+    subject { Rask::Library.new(:lib_name) {} }
     its(:name) { should == :lib_name }
   end
 
   describe 'actions' do
     before(:all) do
-      @lib = Rask::Factory.new.create(:lib_name) { action(:action_name) { :expected_result } }
+      @lib = Rask::Library.new(:lib_name) do
+        action(:action_name) { block { :expected_result } }
+      end
     end
     subject { @lib }
 
     its(:action_name) { should == :expected_result }
+
+    describe '#actions' do
+      subject { @lib.actions }
+
+      it { should_not be_empty }
+      its([:action_name]) { should be_a Rask::Action }
+    end
   end
 
   describe 'methods' do
     before(:all) do
-      @lib = Rask::Factory.new.create(:lib_name) { method(:method_name) { :expected_result } }
+      @lib = Rask::Library.new(:lib_name) { method(:method_name) { :expected_result } }
     end
     subject { @lib }
 
@@ -28,12 +36,12 @@ describe Rask::Library do
 
   describe 'libraries' do
     before(:all) do
-      @lib = Rask::Factory.new.create(:lib_name) do
+      @lib = Rask::Library.new(:lib_name) do
         library(:sub_lib_name) { method(:sub_method) { :expected_result } }
       end
     end
 
-    describe 'its libraries' do
+    describe '#libraries' do
       subject { @lib.libraries }
 
       it { should have(1).item }
@@ -54,6 +62,18 @@ describe Rask::Library do
       end
     end
 
+  end
+
+  describe '#help' do
+    before(:all) do
+      @lib = Rask::Library.new(:lib_name) do
+        action(:action_name) { block { :expected_result } }
+      end
+    end
+    subject { @lib }
+
+    its(:methods) { should include :help }
+    its(:actions) { should include :help }
   end
 
 end
