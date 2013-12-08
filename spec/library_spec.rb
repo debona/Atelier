@@ -17,7 +17,7 @@ describe Rask::Library do
 
     its(:action_name) { should == :expected_result }
 
-    describe 'its actions' do
+    describe '#actions' do
       subject { @lib.actions }
 
       it { should_not be_empty }
@@ -41,7 +41,7 @@ describe Rask::Library do
       end
     end
 
-    describe 'its libraries' do
+    describe '#libraries' do
       subject { @lib.libraries }
 
       it { should have(1).item }
@@ -62,6 +62,18 @@ describe Rask::Library do
       end
     end
 
+  end
+
+  describe '#help' do
+    before(:all) do
+      @lib = Rask::Library.new(:lib_name) do
+        action(:action_name) { block { :expected_result } }
+      end
+    end
+    subject { @lib }
+
+    its(:methods) { should include :help }
+    its(:actions) { should include :help }
   end
 
 end

@@ -9,7 +9,7 @@ library :sample do
   EOS
 
   action :sample_action do
-    synopsis    'sample_action <args>*'
+    synopsis    '<args>*'
     description 'It will print all the arguments one by line.'
     block do |*args|
       puts 'sample_action called!'
