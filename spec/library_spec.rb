@@ -9,7 +9,9 @@ describe Rask::Library do
 
   describe 'actions' do
     before(:all) do
-      @lib = Rask::Library.new(:lib_name) { action(:action_name) { :expected_result } }
+      @lib = Rask::Library.new(:lib_name) do
+        action(:action_name) { block { :expected_result } }
+      end
     end
     subject { @lib }
 
@@ -19,7 +21,7 @@ describe Rask::Library do
       subject { @lib.actions }
 
       it { should_not be_empty }
-      its([:action_name]) { should be_a Proc }
+      its([:action_name]) { should be_a Rask::Action }
     end
   end
 

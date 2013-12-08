@@ -45,13 +45,13 @@ describe Rask::LibraryDSL do
     context 'with an already given action name' do
       before do
         @library = Object.new.extend Rask::LibraryDSL
-        @library.send(:action, :action_one) { :original_result }
+        @library.send(:action, :action_one) { block { :original_result } }
       end
       subject { @library }
 
       it 'should override the action with a warning' do
         Rask::Application.instance.logger.should_receive(:warn)
-        @library.send(:action, :action_one) { :overriden_result }
+        @library.send(:action, :action_one) { block { :overriden_result } }
         subject.action_one.should == :overriden_result
       end
     end

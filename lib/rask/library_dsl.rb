@@ -1,4 +1,4 @@
-require 'rask/library'
+require 'rask/Action'
 
 module Rask
 
@@ -30,8 +30,9 @@ module Rask
     def action(action_name, &block)
       @actions ||= {}
       Application.instance.logger.warn "The method '#{action_name}' is overridden by your provided action" if methods.include?(action_name.to_sym)
-      @actions[action_name] = block
-      method(action_name, &block)
+      action = Action.new(action_name, &block)
+      @actions[action_name] = action
+      method(action_name, &action.proc)
     end
 
   end
