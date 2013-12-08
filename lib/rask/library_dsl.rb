@@ -4,11 +4,19 @@ module Rask
 
   module LibraryDSL
 
-    attr_reader :title, :description
+    def title(*args)
+      @title ||= ''
+      @title = args.join(' ') unless args.empty?
+      @title
+    end
+
+    def description(*args)
+      @description ||= ''
+      @description = args.join("\n") unless args.empty?
+      @description
+    end
 
     private
-
-    attr_writer :title, :description
 
     def method(name, &block)
       (class << self; self; end).send(:define_method, name, &block)

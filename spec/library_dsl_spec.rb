@@ -4,7 +4,11 @@ require 'rask/library_dsl'
 
 describe Rask::LibraryDSL do
 
-  before(:all) { @library = Object.new.extend Rask::LibraryDSL }
+  class LibClass
+    include Rask::LibraryDSL
+  end
+
+  before(:all) { @library = LibClass.new }
   subject { @library }
 
   describe 'attributes' do
@@ -14,7 +18,7 @@ describe Rask::LibraryDSL do
     ].each do |attr_name|
       describe "##{attr_name}" do
         value = "This is the #{attr_name} value"
-        before { @library.send("#{attr_name}=", value) }
+        before { @library.send(attr_name, value) }
 
         its(attr_name) { should == value }
       end
@@ -23,7 +27,7 @@ describe Rask::LibraryDSL do
 
   describe '#method' do
     before(:all) do
-      @library = Object.new.extend Rask::LibraryDSL
+      @library = LibClass.new
       @library.send(:method, :method_name) {}
     end
     subject { @library }
@@ -34,7 +38,7 @@ describe Rask::LibraryDSL do
   describe '#action' do
     context 'with trivial value' do
       before(:all) do
-        @library = Object.new.extend Rask::LibraryDSL
+        @library = LibClass.new
         @library.send(:action, :action_one) {}
       end
       subject { @library }
@@ -44,7 +48,7 @@ describe Rask::LibraryDSL do
 
     context 'with an already given action name' do
       before do
-        @library = Object.new.extend Rask::LibraryDSL
+        @library = LibClass.new
         @library.send(:action, :action_one) { block { :original_result } }
       end
       subject { @library }
@@ -59,7 +63,7 @@ describe Rask::LibraryDSL do
 
   describe '#library' do
     before(:all) do
-      @library = Object.new.extend Rask::LibraryDSL
+      @library = LibClass.new
       @library.send(:library, :sub_lib_name) {}
     end
 

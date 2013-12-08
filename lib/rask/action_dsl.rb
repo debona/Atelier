@@ -3,11 +3,19 @@ module Rask
 
   module ActionDSL
 
-    attr_reader :synopsis, :description
+    def synopsis(*args)
+      @synopsis ||= ''
+      @synopsis = args.join(' ') unless args.empty?
+      @synopsis
+    end
+
+    def description(*args)
+      @description ||= ''
+      @description = args.join("\n") unless args.empty?
+      @description
+    end
 
     private
-
-    attr_writer :synopsis, :description
 
     def block(&proc)
       @proc = proc

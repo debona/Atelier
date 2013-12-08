@@ -2,7 +2,11 @@ require 'rask/action_dsl'
 
 describe Rask::ActionDSL do
 
-  before(:all) { @action = Object.new.extend Rask::ActionDSL }
+  class ActionClass
+    include Rask::ActionDSL
+  end
+
+  before(:all) { @action = ActionClass.new }
   subject { @action }
 
   describe 'attributes' do
@@ -12,7 +16,7 @@ describe Rask::ActionDSL do
     ].each do |attr_name|
       describe "##{attr_name}" do
         value = "This is the #{attr_name} value"
-        before { @action.send("#{attr_name}=", value) }
+        before { @action.send(attr_name, value) }
 
         its(attr_name) { should == value }
       end
@@ -21,7 +25,7 @@ describe Rask::ActionDSL do
 
   describe '#block' do
     before(:all) do
-      @action = Object.new.extend Rask::ActionDSL
+      @action = ActionClass.new
       @action.send(:block) { :expected_result }
     end
     subject { @action.instance_eval { @proc } }
