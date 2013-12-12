@@ -5,7 +5,7 @@ describe Rask::Application do
   subject { @app }
 
   describe '.instance' do
-    its(:library) { should be_nil }
+    its(:root_library) { should be_nil }
     its(:logger) { should be_a Logger }
 
     describe 'its side-effects' do
@@ -13,18 +13,18 @@ describe Rask::Application do
         Kernel.methods.should include :library
       end
 
-      it 'library should redirect to the app load_library method' do
-        @app.should_receive(:load_library).with(:name)
+      it 'library should redirect to the app load_root_library method' do
+        @app.should_receive(:load_root_library).with(:name)
         Kernel.library(:name) {}
       end
     end
   end
 
-  describe '#load_library' do
+  describe '#load_root_library' do
     name = :lib_name
 
-    before(:all) { @app.load_library(name) {} }
-    subject { @app.library }
+    before(:all) { @app.load_root_library(name) {} }
+    subject { @app.root_library }
 
     it { should be_a Rask::Library }
     its(:name) { should == name }
@@ -36,7 +36,7 @@ describe Rask::Application do
       parameter       = :param
       expected_result = [parameter]
 
-      before  { @app.library.stub(action_name) { |*params| params } }
+      before  { @app.root_library.stub(action_name) { |*params| params } }
       subject { @app.send_action(action_name.to_s, parameter) }
 
       it { should be_a Array }
@@ -55,9 +55,9 @@ describe Rask::Application do
     context 'with an existing library file' do
       subject { @app }
 
-      it 'should load the library file' do
+      it 'should load the library file as root library' do
         subject.run('spec/fixtures/sample.rb', :sample_action)
-        subject.library.name.should == :sample
+        subject.root_library.name.should == :sample
       end
       it 'should send_action with the :sample_action action' do
         subject.should_receive(:send_action).with(:sample_action)
