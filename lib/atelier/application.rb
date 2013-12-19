@@ -1,9 +1,9 @@
 require 'singleton'
 require 'logger'
 
-require 'rask/library'
+require 'atelier/library'
 
-module Rask
+module Atelier
 
   class Application
 

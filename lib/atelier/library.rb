@@ -1,6 +1,6 @@
-require 'rask/library_dsl'
+require 'atelier/library_dsl'
 
-module Rask
+module Atelier
 
   class Library
 

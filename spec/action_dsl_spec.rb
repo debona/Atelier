@@ -1,9 +1,9 @@
-require 'rask/action_dsl'
+require 'atelier/action_dsl'
 
-describe Rask::ActionDSL do
+describe Atelier::ActionDSL do
 
   class ActionClass
-    include Rask::ActionDSL
+    include Atelier::ActionDSL
   end
 
   before(:all) { @action = ActionClass.new }

@@ -1,5 +1,5 @@
 Gem::Specification.new do |s|
-  s.name        = 'rask'
+  s.name        = 'atelier'
   s.summary     = 'Ruby task'
   s.description = 'A simple ruby task'
   s.authors     = ['Thomas DE BONA']
@@ -11,6 +11,6 @@ Gem::Specification.new do |s|
   s.files       = Dir['{lib}/**/*.rb', 'bin/*', '*.md']
   s.executables = Dir['bin/*'].collect { |executable| File.basename(executable) }
 
-  s.homepage    = 'http://rubygems.org/gems/rask'
+  s.homepage    = 'http://rubygems.org/gems/atelier'
   s.license     = 'MIT'
 end

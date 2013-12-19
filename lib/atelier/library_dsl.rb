@@ -1,6 +1,6 @@
-require 'rask/Action'
+require 'atelier/Action'
 
-module Rask
+module Atelier
 
   module LibraryDSL
 

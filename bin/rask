@@ -1,5 +1,0 @@
-#!/usr/bin/env ruby
-
-require 'rask'
-
-app = Rask::Application.instance.run(*ARGV)

@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require 'atelier'
+
+app = Atelier::Application.instance.run(*ARGV)

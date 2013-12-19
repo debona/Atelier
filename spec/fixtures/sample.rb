@@ -1,4 +1,4 @@
-#!/usr/bin/env rask
+#!/usr/bin/env atelier
 
 library :sample do
   title 'It is a sample'

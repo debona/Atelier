@@ -1,15 +1,15 @@
-require 'rask/library'
+require 'atelier/library'
 
-describe Rask::Library do
+describe Atelier::Library do
 
   describe '#initialize' do
-    subject { Rask::Library.new(:lib_name) {} }
+    subject { Atelier::Library.new(:lib_name) {} }
     its(:name) { should == :lib_name }
   end
 
   describe 'actions' do
     before(:all) do
-      @lib = Rask::Library.new(:lib_name) do
+      @lib = Atelier::Library.new(:lib_name) do
         action(:action_name) { block { :expected_result } }
       end
     end
@@ -21,13 +21,13 @@ describe Rask::Library do
       subject { @lib.actions }
 
       it { should_not be_empty }
-      its([:action_name]) { should be_a Rask::Action }
+      its([:action_name]) { should be_a Atelier::Action }
     end
   end
 
   describe 'methods' do
     before(:all) do
-      @lib = Rask::Library.new(:lib_name) { method(:method_name) { :expected_result } }
+      @lib = Atelier::Library.new(:lib_name) { method(:method_name) { :expected_result } }
     end
     subject { @lib }
 
@@ -36,7 +36,7 @@ describe Rask::Library do
 
   describe 'libraries' do
     before(:all) do
-      @lib = Rask::Library.new(:lib_name) do
+      @lib = Atelier::Library.new(:lib_name) do
         library(:sub_lib_name) { method(:sub_method) { :expected_result } }
       end
     end
@@ -45,14 +45,14 @@ describe Rask::Library do
       subject { @lib.libraries }
 
       it { should have(1).item }
-      its([:sub_lib_name]) { should be_a Rask::Library }
+      its([:sub_lib_name]) { should be_a Atelier::Library }
     end
 
     describe '#sub_lib_name' do
       subject { @lib }
 
       context 'without parameters' do
-        its(:sub_lib_name) { should be_a Rask::Library }
+        its(:sub_lib_name) { should be_a Atelier::Library }
       end
 
       context 'with parameters' do
@@ -66,7 +66,7 @@ describe Rask::Library do
 
   describe '#help' do
     before(:all) do
-      @lib = Rask::Library.new(:lib_name) do
+      @lib = Atelier::Library.new(:lib_name) do
         action(:action_name) { block { :expected_result } }
       end
     end

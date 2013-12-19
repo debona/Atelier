@@ -1,5 +1,5 @@
 
-module Rask
+module Atelier
 
   module ActionDSL
 

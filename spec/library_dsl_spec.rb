@@ -1,11 +1,11 @@
-require 'rask/application'
-require 'rask/library_dsl'
+require 'atelier/application'
+require 'atelier/library_dsl'
 
 
-describe Rask::LibraryDSL do
+describe Atelier::LibraryDSL do
 
   class LibClass
-    include Rask::LibraryDSL
+    include Atelier::LibraryDSL
   end
 
   before(:all) { @library = LibClass.new }
@@ -54,7 +54,7 @@ describe Rask::LibraryDSL do
       subject { @library }
 
       it 'should override the action with a warning' do
-        Rask::Application.instance.logger.should_receive(:warn)
+        Atelier::Application.instance.logger.should_receive(:warn)
         @library.send(:action, :action_one) { block { :overriden_result } }
         subject.action_one.should == :overriden_result
       end
@@ -69,7 +69,7 @@ describe Rask::LibraryDSL do
 
     subject { @library.send(:sub_lib_name) }
 
-    it { should be_a Rask::Library }
+    it { should be_a Atelier::Library }
     its(:name)    { should == :sub_lib_name }
   end
 

@@ -1,7 +1,7 @@
-require 'rask/application'
+require 'atelier/application'
 
-describe Rask::Application do
-  before(:all) { @app = Rask::Application.instance }
+describe Atelier::Application do
+  before(:all) { @app = Atelier::Application.instance }
   subject { @app }
 
   describe '.instance' do
@@ -26,7 +26,7 @@ describe Rask::Application do
     before(:all) { @app.load_root_library(name) {} }
     subject { @app.root_library }
 
-    it { should be_a Rask::Library }
+    it { should be_a Atelier::Library }
     its(:name) { should == name }
   end
 

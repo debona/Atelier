@@ -1,6 +1,6 @@
-require 'rask/action_dsl'
+require 'atelier/action_dsl'
 
-module Rask
+module Atelier
 
   class Action
 
