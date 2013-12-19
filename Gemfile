@@ -2,6 +2,11 @@ source 'http://rubygems.org'
 
 ruby '2.0.0'
 
-gem 'byebug'
-gem 'rspec'
-gem 'rspec-mocks'
+group :development do
+  gem 'byebug'
+end
+
+group :test do
+  gem 'rspec'
+  gem 'rspec-mocks'
+end
