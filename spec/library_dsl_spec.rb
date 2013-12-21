@@ -73,4 +73,16 @@ describe Atelier::LibraryDSL do
     its(:name)    { should == :sub_lib_name }
   end
 
+  describe '#load_library' do
+    lib_name = 'loaded.rb'
+    before do
+      Atelier::Application.instance.stub(:locate_library) { "spec/fixtures/#{lib_name}" }
+      @library = LibClass.new
+      @library.send(:load_library, lib_name)
+    end
+    it 'should properly load the library as a ruby file' do
+      @library.instance_eval { @loaded_properly }.should be_true
+    end
+  end
+
 end
