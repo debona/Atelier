@@ -25,6 +25,11 @@ module Atelier
       @root_library = Library.new(name, &block)
     end
 
+    def locate_library(file_name)
+      lib_path = `which #{file_name}`
+      lib_path.strip! if lib_path
+    end
+
     def send_action(action, *parameters)
       root_library.send(action, *parameters)
     rescue Exception => e

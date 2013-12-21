@@ -73,4 +73,18 @@ describe Atelier::Application do
     end
   end
 
+  describe '#locate_library' do
+    subject { @app.locate_library(file_name) }
+
+    context 'with a file available from the $PATH' do
+      let(:file_name) { :bash }
+      it { should == '/bin/bash' }
+    end
+
+    context 'with a file not available from the $PATH' do
+      let(:file_name) { :qsgfqDs }
+      it { should be_nil }
+    end
+  end
+
 end
