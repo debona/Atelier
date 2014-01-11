@@ -2,7 +2,7 @@
 
 library :sample do
 
-  load_library 'sub_sample.rb'
+  load_library File.join(File.dirname(__FILE__), 'sub_sample.rb')
 
   title 'It is a sample'
   description <<-EOS

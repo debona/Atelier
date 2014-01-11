@@ -26,6 +26,8 @@ module Atelier
     end
 
     def locate_library(file_name)
+      file_name = file_name.to_s
+      return file_name if File.exists?(file_name)
       lib_path = `which #{file_name}`
       lib_path.strip! if lib_path
     end
