@@ -22,6 +22,12 @@ module Atelier
       (class << self; self; end).send(:define_method, name, &block)
     end
 
+    def load_library(lib_name)
+      lib_path = Application.instance.locate_library lib_name
+      lib_script = File.open(lib_path).read
+      instance_eval(lib_script)
+    end
+
     def library(lib_name, &block)
       @libraries ||= {}
       library = Library.new(lib_name, &block)
