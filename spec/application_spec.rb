@@ -7,7 +7,7 @@ describe Atelier::Application do
   subject { @app }
 
   describe '.instance' do
-    its(:root_library) { should be_nil }
+    pending { its(:root_library) { should be_nil } }
     its(:logger) { should be_a Logger }
 
     describe 'its side-effects' do
