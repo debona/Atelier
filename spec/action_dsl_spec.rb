@@ -1,3 +1,5 @@
+require 'spec_helper'
+
 require 'atelier/action_dsl'
 
 describe Atelier::ActionDSL do

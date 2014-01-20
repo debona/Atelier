@@ -1,3 +1,5 @@
+require 'spec_helper'
+
 require 'atelier/library'
 
 describe Atelier::Library do

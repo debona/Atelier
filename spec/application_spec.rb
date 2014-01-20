@@ -1,3 +1,5 @@
+require 'spec_helper'
+
 require 'atelier/application'
 
 describe Atelier::Application do
