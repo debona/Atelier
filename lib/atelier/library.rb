@@ -17,7 +17,7 @@ module Atelier
       @libraries = {}
       @actions = {}
       Default.instance_methods.each do |action_name|
-        actions[action_name] = :default
+        @actions[action_name] = :default
       end
 
       instance_eval &block
