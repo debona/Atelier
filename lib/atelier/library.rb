@@ -23,6 +23,13 @@ module Atelier
       instance_eval &block
     end
 
+    def run(action, *parameters)
+      # TODO if action is an action
+      send(action, *parameters)
+      # TODO else try with a library
+      # libraries[action].run(*parameters)
+    end
+
   end
 
 end

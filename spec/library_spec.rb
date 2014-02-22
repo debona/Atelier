@@ -9,6 +9,29 @@ describe Atelier::Library do
     its(:name) { should == :lib_name }
   end
 
+  describe '#run' do
+    before(:all) { @lib = Atelier::Library.new(:lib_name) {} }
+    subject { @lib }
+
+    context 'with an existing action' do
+      action_name     = :action_name
+      parameter       = :param
+      expected_result = [parameter]
+
+      subject { @lib.run(action_name.to_s, parameter) }
+      before {  @lib.stub(action_name) { |*params| params } }
+
+      it { should be_a Array }
+      it { should == expected_result }
+    end
+
+    context 'with wrong action' do
+      it 'should raise an error' do
+        expect { subject.run(:wrong_action, 'param1', 'param2') }.to raise_error
+      end
+    end
+  end
+
   describe 'actions' do
     before(:all) do
       @lib = Atelier::Library.new(:lib_name) do
