@@ -1,10 +1,12 @@
 require 'atelier/library_dsl'
+require 'atelier/default_actions'
 
 module Atelier
 
   class Library
 
     include LibraryDSL
+    include ::Atelier::Default
 
     attr_reader :name
 
@@ -13,36 +15,12 @@ module Atelier
       @title = ''
       @description = ''
       @libraries = {}
-      @actions = {
-        libraries: :default,
-        actions: :default,
-        help: :default
-      }
+      @actions = {}
+      Default.instance_methods.each do |action_name|
+        actions[action_name] = :default
+      end
+
       instance_eval &block
-    end
-
-    def libraries
-      @libraries.each { |lib_name, lib| puts lib_name }
-      @libraries
-    end
-
-    def actions
-      @actions.each { |action_name, action| puts action_name }
-      @actions
-    end
-
-    def help
-      puts "#{name}: #{title}"
-
-      puts 'default actions:'
-      @actions.each do |action_name, action|
-        puts "  - #{name} #{action_name}" if action == :default
-      end
-
-      puts 'actions:'
-      @actions.each do |action_name, action|
-        puts "  - #{name} #{action_name} #{action.synopsis}" unless action == :default
-      end
     end
 
   end
