@@ -13,7 +13,7 @@ module Atelier
 
     def initialize
       @root_library = nil
-      @logger = Logger.new(STDERR)
+      @logger = Logger.new(STDERR) # TODO: make a module with that
       @logger.level = Logger::WARN
 
       Kernel.send(:define_method, :library) do |name, &block|
@@ -32,16 +32,9 @@ module Atelier
       lib_path.strip! if lib_path
     end
 
-    def send_action(action, *parameters)
-      root_library.send(action, *parameters)
-    rescue Exception => e
-      logger.error e
-    end
-
     def run(library_file, action, *parameters)
       load(library_file)
-
-      send_action(action, *parameters)
+      root_library.run(action, *parameters)
     rescue Exception => e
       logger.error e
     end

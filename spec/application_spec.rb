@@ -32,27 +32,6 @@ describe Atelier::Application do
     its(:name) { should == name }
   end
 
-  describe '#send_action' do
-    context 'with an existing action' do
-      action_name     = :action_name
-      parameter       = :param
-      expected_result = [parameter]
-
-      before  { @app.root_library.stub(action_name) { |*params| params } }
-      subject { @app.send_action(action_name.to_s, parameter) }
-
-      it { should be_a Array }
-      it { should == expected_result }
-    end
-
-    context 'with wrong action' do
-      it 'should display an error' do
-        @app.logger.should_receive(:error)
-        @app.send_action('wrong_action', 'param1', 'param2')
-      end
-    end
-  end
-
   describe '#run' do
     context 'with an existing library file' do
       subject { @app }
@@ -61,8 +40,10 @@ describe Atelier::Application do
         subject.run('spec/fixtures/sample.rb', :sample_action)
         subject.root_library.name.should == :sample
       end
-      it 'should send_action with the :sample_action action' do
-        subject.should_receive(:send_action).with(:sample_action)
+      it 'should run the :sample_action on the root_library ' do
+        root_library = Object.new
+        root_library.should_receive(:run).with(:sample_action)
+        subject.stub(:root_library) { root_library }
         subject.run('spec/fixtures/sample.rb', :sample_action)
       end
     end

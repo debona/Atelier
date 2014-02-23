@@ -9,31 +9,54 @@ describe Atelier::Library do
     its(:name) { should == :lib_name }
   end
 
-  describe 'actions' do
+  describe '#run' do
+    before(:all) do
+      @lib = Atelier::Library.new(:lib_name) do
+        action(:action_name) { block { |*params| params } }
+      end
+    end
+    subject { @lib }
+
+    context 'with an existing action' do
+      parameter       = :param
+      expected_result = [parameter]
+      subject { @lib.run(:action_name, parameter) }
+
+      it { should be_a Array }
+      it { should == expected_result }
+    end
+
+    context 'with a sub-library' do
+      before(:all) do
+        @lib = Atelier::Library.new(:lib_name) do
+          library(:sub_lib_name) { }
+        end
+      end
+      subject { @lib }
+
+      it 'should call `run` on the sub-library' do
+        subject.libraries[:sub_lib_name].should_receive(:run).with(:action_name, :param)
+        subject.run(:sub_lib_name, :action_name, :param)
+      end
+    end
+
+    context 'with a wrong action' do
+      it 'should raise an error' do
+        expect { subject.run(:wrong_action, 'param1', 'param2') }.to raise_error
+      end
+    end
+  end
+
+  describe '#actions' do
     before(:all) do
       @lib = Atelier::Library.new(:lib_name) do
         action(:action_name) { block { :expected_result } }
       end
     end
-    subject { @lib }
+    subject { @lib.actions }
 
-    its(:action_name) { should == :expected_result }
-
-    describe '#actions' do
-      subject { @lib.actions }
-
-      it { should_not be_empty }
-      its([:action_name]) { should be_a Atelier::Action }
-    end
-  end
-
-  describe 'methods' do
-    before(:all) do
-      @lib = Atelier::Library.new(:lib_name) { method(:method_name) { :expected_result } }
-    end
-    subject { @lib }
-
-    its(:method_name) { should == :expected_result }
+    it { should_not be_empty }
+    its([:action_name]) { should be_a Atelier::Action }
   end
 
   describe 'libraries' do
@@ -51,31 +74,19 @@ describe Atelier::Library do
     end
 
     describe '#sub_lib_name' do
-      subject { @lib }
+      subject { @lib.sub_lib_name }
 
-      context 'without parameters' do
-        its(:sub_lib_name) { should be_a Atelier::Library }
-      end
-
-      context 'with parameters' do
-        it 'should chain the messages and return the result' do
-          subject.sub_lib_name(:sub_method).should == :expected_result
-        end
-      end
+      it { should be_a Atelier::Library }
     end
-
   end
 
-  describe '#help' do
-    before(:all) do
-      @lib = Atelier::Library.new(:lib_name) do
-        action(:action_name) { block { :expected_result } }
-      end
-    end
-    subject { @lib }
+  describe 'default actions' do
+    before(:all) { @lib = Atelier::Library.new(:lib_name) {} }
+    subject      { @lib.actions }
 
-    its(:methods) { should include :help }
-    its(:actions) { should include :help }
+    it { should include :help }
+    it { should include :actions }
+    it { should include :libraries }
   end
 
 end
