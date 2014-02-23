@@ -8,6 +8,8 @@ describe Atelier::LibraryDSL do
 
   class LibClass
     include Atelier::LibraryDSL
+
+    attr_reader :actions
   end
 
   before(:all) { @library = LibClass.new }
@@ -45,20 +47,26 @@ describe Atelier::LibraryDSL do
       end
       subject { @library }
 
-      its(:methods) { should include :action_one }
+      its(:actions) { should include :action_one }
     end
 
     context 'with an already given action name' do
+      expected_proc = Proc.new { :overriden }
       before do
         @library = LibClass.new
-        @library.send(:action, :action_one) { block { :original_result } }
+        @library.send(:action, :action_one) { block { :original } }
       end
       subject { @library }
 
-      it 'should override the action with a warning' do
+      it 'should log a warning' do
         Atelier::Application.instance.logger.should_receive(:warn)
-        @library.send(:action, :action_one) { block { :overriden_result } }
-        subject.action_one.should == :overriden_result
+        subject.send(:action, :action_one) { block(&expected_proc) }
+      end
+
+      it 'should override the action' do
+        Atelier::Application.instance.logger.stub(:warn)
+        subject.send(:action, :action_one) { block(&expected_proc) }
+        subject.actions[:action_one].proc.should == expected_proc
       end
     end
   end

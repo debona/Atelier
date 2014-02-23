@@ -33,31 +33,16 @@ describe Atelier::Library do
     end
   end
 
-  describe 'actions' do
+  describe '#actions' do
     before(:all) do
       @lib = Atelier::Library.new(:lib_name) do
         action(:action_name) { block { :expected_result } }
       end
     end
-    subject { @lib }
+    subject { @lib.actions }
 
-    its(:action_name) { should == :expected_result }
-
-    describe '#actions' do
-      subject { @lib.actions }
-
-      it { should_not be_empty }
-      its([:action_name]) { should be_a Atelier::Action }
-    end
-  end
-
-  describe 'methods' do
-    before(:all) do
-      @lib = Atelier::Library.new(:lib_name) { method(:method_name) { :expected_result } }
-    end
-    subject { @lib }
-
-    its(:method_name) { should == :expected_result }
+    it { should_not be_empty }
+    its([:action_name]) { should be_a Atelier::Action }
   end
 
   describe 'libraries' do

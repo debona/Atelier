@@ -43,10 +43,9 @@ module Atelier
 
     def action(action_name, &block)
       @actions ||= {}
-      Application.instance.logger.warn "The method '#{action_name}' is overridden by your provided action" if methods.include?(action_name.to_sym)
+      Application.instance.logger.warn "The method '#{action_name}' is overridden by your provided action" if @actions.key?(action_name.to_sym)
       action = Action.new(action_name, &block)
       @actions[action_name] = action
-      method(action_name, &action.proc)
     end
 
   end
