@@ -8,7 +8,7 @@ module Atelier
     include LibraryDSL
     include ::Atelier::Default
 
-    attr_reader :name
+    attr_reader :name, :actions, :libraries
 
     def initialize(name, &block)
       @name = name
@@ -16,19 +16,21 @@ module Atelier
       @description = ''
       @libraries = {}
       @actions = {}
-      Default.instance_methods.each do |action_name|
-        @actions[action_name] = :default
+
+      Default.constants.each do |constant|
+        action = Default.const_get(constant)
+        @actions[action.name] = action
       end
 
       instance_eval &block
     end
 
     def run(action_name, *parameters)
-      action = @actions[action_name]
+      action = actions[action_name]
       if action
         instance_exec(*parameters, &action.proc)
-      elsif @libraries.key?(action_name)
-        @libraries[action_name].run(*parameters)
+      elsif libraries.key?(action_name)
+        libraries[action_name].run(*parameters)
       else
         raise "no action '#{action_name}'"
       end

@@ -80,16 +80,13 @@ describe Atelier::Library do
     end
   end
 
-  describe '#help' do
-    before(:all) do
-      @lib = Atelier::Library.new(:lib_name) do
-        action(:action_name) { block { :expected_result } }
-      end
-    end
-    subject { @lib }
+  describe 'default actions' do
+    before(:all) { @lib = Atelier::Library.new(:lib_name) {} }
+    subject      { @lib.actions }
 
-    its(:methods) { should include :help }
-    its(:actions) { should include :help }
+    it { should include :help }
+    it { should include :actions }
+    it { should include :libraries }
   end
 
 end
