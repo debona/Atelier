@@ -32,13 +32,7 @@ module Atelier
       @libraries ||= {}
       library = Library.new(lib_name, &block)
       @libraries[lib_name] = library
-      method(lib_name) do |*args|
-        if args.empty?
-          library
-        else
-          library.send(*args)
-        end
-      end
+      method(lib_name) { library }
     end
 
     def action(action_name, &block)

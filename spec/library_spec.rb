@@ -74,19 +74,10 @@ describe Atelier::Library do
     end
 
     describe '#sub_lib_name' do
-      subject { @lib }
+      subject { @lib.sub_lib_name }
 
-      context 'without parameters' do
-        its(:sub_lib_name) { should be_a Atelier::Library }
-      end
-
-      context 'with parameters' do
-        it 'should chain the messages and return the result' do
-          subject.sub_lib_name(:sub_method).should == :expected_result
-        end
-      end
+      it { should be_a Atelier::Library }
     end
-
   end
 
   describe '#help' do
