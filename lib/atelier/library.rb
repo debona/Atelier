@@ -27,11 +27,11 @@ module Atelier
       action = @actions[action_name]
       if action
         instance_exec(*parameters, &action.proc)
+      elsif @libraries.key?(action_name)
+        @libraries[action_name].run(*parameters)
       else
         raise "no action '#{action_name}'"
       end
-      # TODO else try with a library
-      # libraries[action].run(*parameters)
     end
 
   end

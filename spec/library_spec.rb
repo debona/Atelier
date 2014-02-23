@@ -26,7 +26,21 @@ describe Atelier::Library do
       it { should == expected_result }
     end
 
-    context 'with wrong action' do
+    context 'with a sub-library' do
+      before(:all) do
+        @lib = Atelier::Library.new(:lib_name) do
+          library(:sub_lib_name) { }
+        end
+      end
+      subject { @lib }
+
+      it 'should call `run` on the sub-library' do
+        subject.libraries[:sub_lib_name].should_receive(:run).with(:action_name, :param)
+        subject.run(:sub_lib_name, :action_name, :param)
+      end
+    end
+
+    context 'with a wrong action' do
       it 'should raise an error' do
         expect { subject.run(:wrong_action, 'param1', 'param2') }.to raise_error
       end
