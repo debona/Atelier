@@ -10,16 +10,17 @@ describe Atelier::Library do
   end
 
   describe '#run' do
-    before(:all) { @lib = Atelier::Library.new(:lib_name) {} }
+    before(:all) do
+      @lib = Atelier::Library.new(:lib_name) do
+        action(:action_name) { block { |*params| params } }
+      end
+    end
     subject { @lib }
 
     context 'with an existing action' do
-      action_name     = :action_name
       parameter       = :param
       expected_result = [parameter]
-
-      subject { @lib.run(action_name.to_s, parameter) }
-      before {  @lib.stub(action_name) { |*params| params } }
+      subject { @lib.run(:action_name, parameter) }
 
       it { should be_a Array }
       it { should == expected_result }

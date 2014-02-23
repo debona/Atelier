@@ -23,9 +23,13 @@ module Atelier
       instance_eval &block
     end
 
-    def run(action, *parameters)
-      # TODO if action is an action
-      send(action, *parameters)
+    def run(action_name, *parameters)
+      action = @actions[action_name]
+      if action
+        instance_exec(*parameters, &action.proc)
+      else
+        raise "no action '#{action_name}'"
+      end
       # TODO else try with a library
       # libraries[action].run(*parameters)
     end
