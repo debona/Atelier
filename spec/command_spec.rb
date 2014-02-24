@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-require 'atelier/library'
+require 'atelier/command'
 
 describe Atelier::Command do
 

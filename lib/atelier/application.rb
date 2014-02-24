@@ -1,7 +1,7 @@
 require 'singleton'
 require 'logger'
 
-require 'atelier/library'
+require 'atelier/command'
 
 module Atelier
 

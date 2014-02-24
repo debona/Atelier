@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 require 'atelier/application'
-require 'atelier/library_dsl'
+require 'atelier/command_dsl'
 
 
 describe Atelier::CommandDSL do
