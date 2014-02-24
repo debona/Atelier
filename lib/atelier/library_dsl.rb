@@ -2,7 +2,7 @@ require 'atelier/action'
 
 module Atelier
 
-  module LibraryDSL
+  module CommandDSL
 
     def title(*args)
       @title ||= ''
@@ -22,17 +22,17 @@ module Atelier
       (class << self; self; end).send(:define_method, name, &block)
     end
 
-    def load_library(lib_name)
-      lib_path = Application.instance.locate_library lib_name
-      lib_script = File.open(lib_path).read
-      instance_eval(lib_script)
+    def load_command(cmd_name)
+      cmd_path = Application.instance.locate_command cmd_name
+      cmd_script = File.open(cmd_path).read
+      instance_eval(cmd_script)
     end
 
-    def library(lib_name, &block)
-      @libraries ||= {}
-      library = Library.new(lib_name, &block)
-      @libraries[lib_name] = library
-      method(lib_name) { library }
+    def command(cmd_name, &block)
+      @commands ||= {}
+      command = Command.new(cmd_name, &block)
+      @commands[cmd_name] = command
+      method(cmd_name) { command }
     end
 
     def action(action_name, &block)

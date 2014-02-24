@@ -3,9 +3,9 @@ require 'atelier/action'
 module Atelier
   module Default
 
-    LIBRARIES = Action.new(:libraries) do
-      description 'print the sub-libraries'
-      block { @libraries.each { |lib_name, lib| puts lib_name } }
+    COMMANDS = Action.new(:commands) do
+      description 'print the sub-commands'
+      block { @commands.each { |cmd_name, cmd| puts cmd_name } }
     end
 
     ACTIONS = Action.new(:actions) do

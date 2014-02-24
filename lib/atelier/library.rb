@@ -3,18 +3,18 @@ require 'atelier/default_actions'
 
 module Atelier
 
-  class Library
+  class Command
 
-    include LibraryDSL
+    include CommandDSL
     include ::Atelier::Default
 
-    attr_reader :name, :actions, :libraries
+    attr_reader :name, :actions, :commands
 
     def initialize(name, &block)
       @name = name
       @title = ''
       @description = ''
-      @libraries = {}
+      @commands = {}
       @actions = {}
 
       Default.constants.each do |constant|
@@ -29,8 +29,8 @@ module Atelier
       action = actions[action_name]
       if action
         instance_exec(*parameters, &action.proc)
-      elsif libraries.key?(action_name)
-        libraries[action_name].run(*parameters)
+      elsif commands.key?(action_name)
+        commands[action_name].run(*parameters)
       else
         raise "no action '#{action_name}'"
       end

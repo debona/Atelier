@@ -4,16 +4,16 @@ require 'atelier/application'
 require 'atelier/library_dsl'
 
 
-describe Atelier::LibraryDSL do
+describe Atelier::CommandDSL do
 
-  class LibClass
-    include Atelier::LibraryDSL
+  class CmdClass
+    include Atelier::CommandDSL
 
     attr_reader :actions
   end
 
-  before(:all) { @library = LibClass.new }
-  subject { @library }
+  before(:all) { @command = CmdClass.new }
+  subject { @command }
 
   describe 'attributes' do
     [
@@ -22,7 +22,7 @@ describe Atelier::LibraryDSL do
     ].each do |attr_name|
       describe "##{attr_name}" do
         value = "This is the #{attr_name} value"
-        before { @library.send(attr_name, value) }
+        before { @command.send(attr_name, value) }
 
         its(attr_name) { should == value }
       end
@@ -31,10 +31,10 @@ describe Atelier::LibraryDSL do
 
   describe '#method' do
     before(:all) do
-      @library = LibClass.new
-      @library.send(:method, :method_name) {}
+      @command = CmdClass.new
+      @command.send(:method, :method_name) {}
     end
-    subject { @library }
+    subject { @command }
 
     its(:methods) { should include :method_name }
   end
@@ -42,10 +42,10 @@ describe Atelier::LibraryDSL do
   describe '#action' do
     context 'with trivial value' do
       before(:all) do
-        @library = LibClass.new
-        @library.send(:action, :action_one) {}
+        @command = CmdClass.new
+        @command.send(:action, :action_one) {}
       end
-      subject { @library }
+      subject { @command }
 
       its(:actions) { should include :action_one }
     end
@@ -53,10 +53,10 @@ describe Atelier::LibraryDSL do
     context 'with an already given action name' do
       expected_proc = Proc.new { :overriden }
       before do
-        @library = LibClass.new
-        @library.send(:action, :action_one) { block { :original } }
+        @command = CmdClass.new
+        @command.send(:action, :action_one) { block { :original } }
       end
-      subject { @library }
+      subject { @command }
 
       it 'should log a warning' do
         Atelier::Application.instance.logger.should_receive(:warn)
@@ -71,28 +71,28 @@ describe Atelier::LibraryDSL do
     end
   end
 
-  describe '#library' do
+  describe '#command' do
     before(:all) do
-      @library = LibClass.new
-      @library.send(:library, :sub_lib_name) {}
+      @command = CmdClass.new
+      @command.send(:command, :sub_cmd_name) {}
     end
 
-    subject { @library.send(:sub_lib_name) }
+    subject { @command.send(:sub_cmd_name) }
 
-    it { should be_a Atelier::Library }
-    its(:name)    { should == :sub_lib_name }
+    it { should be_a Atelier::Command }
+    its(:name)    { should == :sub_cmd_name }
   end
 
-  describe '#load_library' do
-    lib_path = 'spec/fixtures/loaded.rb'
+  describe '#load_command' do
+    cmd_path = 'spec/fixtures/loaded.rb'
 
     before do
-      @library = LibClass.new
-      @library.send(:load_library, lib_path)
+      @command = CmdClass.new
+      @command.send(:load_command, cmd_path)
     end
 
-    it 'should properly load the library as a ruby file' do
-      @library.instance_eval { @loaded_properly }.should be_true
+    it 'should properly load the command as a ruby file' do
+      @command.instance_eval { @loaded_properly }.should be_true
     end
   end
 

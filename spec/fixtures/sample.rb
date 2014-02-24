@@ -1,8 +1,8 @@
 #!/usr/bin/env atelier
 
-library :sample do
+command :sample do
 
-  load_library File.join(File.dirname(__FILE__), 'sub_sample.rb')
+  load_command File.join(File.dirname(__FILE__), 'sub_sample.rb')
 
   title 'It is a sample'
   description <<-EOS

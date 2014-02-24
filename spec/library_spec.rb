@@ -2,41 +2,41 @@ require 'spec_helper'
 
 require 'atelier/library'
 
-describe Atelier::Library do
+describe Atelier::Command do
 
   describe '#initialize' do
-    subject { Atelier::Library.new(:lib_name) {} }
-    its(:name) { should == :lib_name }
+    subject { Atelier::Command.new(:cmd_name) {} }
+    its(:name) { should == :cmd_name }
   end
 
   describe '#run' do
     before(:all) do
-      @lib = Atelier::Library.new(:lib_name) do
+      @cmd = Atelier::Command.new(:cmd_name) do
         action(:action_name) { block { |*params| params } }
       end
     end
-    subject { @lib }
+    subject { @cmd }
 
     context 'with an existing action' do
       parameter       = :param
       expected_result = [parameter]
-      subject { @lib.run(:action_name, parameter) }
+      subject { @cmd.run(:action_name, parameter) }
 
       it { should be_a Array }
       it { should == expected_result }
     end
 
-    context 'with a sub-library' do
+    context 'with a sub-command' do
       before(:all) do
-        @lib = Atelier::Library.new(:lib_name) do
-          library(:sub_lib_name) { }
+        @cmd = Atelier::Command.new(:cmd_name) do
+          command(:sub_cmd_name) { }
         end
       end
-      subject { @lib }
+      subject { @cmd }
 
-      it 'should call `run` on the sub-library' do
-        subject.libraries[:sub_lib_name].should_receive(:run).with(:action_name, :param)
-        subject.run(:sub_lib_name, :action_name, :param)
+      it 'should call `run` on the sub-command' do
+        subject.commands[:sub_cmd_name].should_receive(:run).with(:action_name, :param)
+        subject.run(:sub_cmd_name, :action_name, :param)
       end
     end
 
@@ -49,44 +49,44 @@ describe Atelier::Library do
 
   describe '#actions' do
     before(:all) do
-      @lib = Atelier::Library.new(:lib_name) do
+      @cmd = Atelier::Command.new(:cmd_name) do
         action(:action_name) { block { :expected_result } }
       end
     end
-    subject { @lib.actions }
+    subject { @cmd.actions }
 
     it { should_not be_empty }
     its([:action_name]) { should be_a Atelier::Action }
   end
 
-  describe 'libraries' do
+  describe 'commands' do
     before(:all) do
-      @lib = Atelier::Library.new(:lib_name) do
-        library(:sub_lib_name) { method(:sub_method) { :expected_result } }
+      @cmd = Atelier::Command.new(:cmd_name) do
+        command(:sub_cmd_name) { method(:sub_method) { :expected_result } }
       end
     end
 
-    describe '#libraries' do
-      subject { @lib.libraries }
+    describe '#commands' do
+      subject { @cmd.commands }
 
       it { should have(1).item }
-      its([:sub_lib_name]) { should be_a Atelier::Library }
+      its([:sub_cmd_name]) { should be_a Atelier::Command }
     end
 
-    describe '#sub_lib_name' do
-      subject { @lib.sub_lib_name }
+    describe '#sub_cmd_name' do
+      subject { @cmd.sub_cmd_name }
 
-      it { should be_a Atelier::Library }
+      it { should be_a Atelier::Command }
     end
   end
 
   describe 'default actions' do
-    before(:all) { @lib = Atelier::Library.new(:lib_name) {} }
-    subject      { @lib.actions }
+    before(:all) { @cmd = Atelier::Command.new(:cmd_name) {} }
+    subject      { @cmd.actions }
 
     it { should include :help }
     it { should include :actions }
-    it { should include :libraries }
+    it { should include :commands }
   end
 
 end
