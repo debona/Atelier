@@ -17,16 +17,16 @@ describe Atelier::Command do
     end
     subject { @cmd }
 
-    context 'with an existing action' do
+    context 'with parameters' do
       parameter       = :param
       expected_result = [parameter]
-      subject { @cmd.run(:action_name, parameter) }
+      subject { @cmd.run(parameter) }
 
       it { should be_a Array }
       it { should == expected_result }
     end
 
-    context 'with a sub-command' do
+    context 'with an existing sub-command' do
       before(:all) do
         @cmd = Atelier::Command.new(:cmd_name) do
           command(:sub_cmd_name) { }
@@ -37,12 +37,6 @@ describe Atelier::Command do
       it 'should call `run` on the sub-command' do
         subject.commands[:sub_cmd_name].should_receive(:run).with(:action_name, :param)
         subject.run(:sub_cmd_name, :action_name, :param)
-      end
-    end
-
-    context 'with a wrong action' do
-      it 'should raise an error' do
-        expect { subject.run(:wrong_action, 'param1', 'param2') }.to raise_error
       end
     end
   end
