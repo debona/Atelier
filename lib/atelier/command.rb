@@ -1,5 +1,5 @@
 require 'atelier/command_dsl'
-require 'atelier/default_actions'
+require 'atelier/default_commands'
 
 module Atelier
 
@@ -18,8 +18,8 @@ module Atelier
       @action = Proc.new {}
 
       Default.constants.each do |constant|
-        action = Default.const_get(constant)
-        @actions[action.name] = action
+        command = Default.const_get(constant)
+        @commands[command.name] = command
       end
 
       instance_eval &block

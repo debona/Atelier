@@ -62,7 +62,7 @@ describe Atelier::Command do
     describe '#commands' do
       subject { @cmd.commands }
 
-      it { should have(1).item }
+      it { should have(3).item }
       its([:sub_cmd_name]) { should be_a Atelier::Command }
     end
 
@@ -73,12 +73,11 @@ describe Atelier::Command do
     end
   end
 
-  describe 'default actions' do
+  describe 'default commands' do
     before(:all) { @cmd = Atelier::Command.new(:cmd_name) {} }
-    subject      { @cmd.actions }
+    subject      { @cmd.commands }
 
     it { should include :help }
-    it { should include :actions }
     it { should include :commands }
   end
 
