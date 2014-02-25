@@ -12,7 +12,7 @@ describe Atelier::Command do
   describe '#run' do
     before(:all) do
       @cmd = Atelier::Command.new(:cmd_name) do
-        action(:action_name) { block { |*params| params } }
+        action { |*params| params }
       end
     end
     subject { @cmd }
@@ -47,16 +47,15 @@ describe Atelier::Command do
     end
   end
 
-  describe '#actions' do
+  describe '#action' do
     before(:all) do
       @cmd = Atelier::Command.new(:cmd_name) do
-        action(:action_name) { block { :expected_result } }
+        action { :expected_result }
       end
     end
-    subject { @cmd.actions }
+    subject { @cmd.action }
 
-    it { should_not be_empty }
-    its([:action_name]) { should be_a Atelier::Action }
+    it { should be_a Proc }
   end
 
   describe 'commands' do

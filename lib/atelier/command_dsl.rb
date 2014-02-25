@@ -16,6 +16,11 @@ module Atelier
       @description
     end
 
+    def action(&block)
+      @action = block if block
+      @action
+    end
+
     private
 
     def method(name, &block)
@@ -33,13 +38,6 @@ module Atelier
       command = Command.new(cmd_name, &block)
       @commands[cmd_name] = command
       method(cmd_name) { command }
-    end
-
-    def action(action_name, &block)
-      @actions ||= {}
-      Application.instance.logger.warn "The method '#{action_name}' is overridden by your provided action" if @actions.key?(action_name.to_sym)
-      action = Action.new(action_name, &block)
-      @actions[action_name] = action
     end
 
   end

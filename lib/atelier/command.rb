@@ -8,14 +8,14 @@ module Atelier
     include CommandDSL
     include ::Atelier::Default
 
-    attr_reader :name, :actions, :commands
+    attr_reader :name, :commands
 
     def initialize(name, &block)
       @name = name
       @title = ''
       @description = ''
       @commands = {}
-      @actions = {}
+      @action = Proc.new {}
 
       Default.constants.each do |constant|
         action = Default.const_get(constant)

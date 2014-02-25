@@ -9,7 +9,6 @@ describe Atelier::CommandDSL do
   class CmdClass
     include Atelier::CommandDSL
 
-    attr_reader :actions
   end
 
   before(:all) { @command = CmdClass.new }
@@ -40,35 +39,14 @@ describe Atelier::CommandDSL do
   end
 
   describe '#action' do
-    context 'with trivial value' do
-      before(:all) do
-        @command = CmdClass.new
-        @command.send(:action, :action_one) {}
-      end
-      subject { @command }
-
-      its(:actions) { should include :action_one }
+    expected_proc = Proc.new { :overriden }
+    before(:all) do
+      @command = CmdClass.new
+      @command.send(:action, &expected_proc)
     end
+    subject { @command }
 
-    context 'with an already given action name' do
-      expected_proc = Proc.new { :overriden }
-      before do
-        @command = CmdClass.new
-        @command.send(:action, :action_one) { block { :original } }
-      end
-      subject { @command }
-
-      it 'should log a warning' do
-        Atelier::Application.instance.logger.should_receive(:warn)
-        subject.send(:action, :action_one) { block(&expected_proc) }
-      end
-
-      it 'should override the action' do
-        Atelier::Application.instance.logger.stub(:warn)
-        subject.send(:action, :action_one) { block(&expected_proc) }
-        subject.actions[:action_one].proc.should == expected_proc
-      end
-    end
+    its(:action) { should == expected_proc }
   end
 
   describe '#command' do
