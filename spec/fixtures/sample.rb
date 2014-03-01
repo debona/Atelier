@@ -1,8 +1,8 @@
 #!/usr/bin/env atelier
 
-library :sample do
+command :sample do
 
-  load_library File.join(File.dirname(__FILE__), 'sub_sample.rb')
+  load_command File.join(File.dirname(__FILE__), 'sub_sample.rb')
 
   title 'It is a sample'
   description <<-EOS
@@ -11,19 +11,21 @@ library :sample do
     This sample is used by the test suite.
   EOS
 
-  action :sample_action do
-    synopsis    '<args>*'
+  action { run(:help) }
+
+  command :sample_command do
+    title 'sample command'
     description 'It will print all the arguments one by line.'
-    block do |*args|
-      puts 'sample_action called!'
+    action do |*args|
+      puts 'sample_command called!'
       args.each { |arg| puts "  - #{arg}" }
       args
     end
   end
 
-  action :another_action do
-    block do |*args|
-      puts 'another_action called!'
+  command :another_command do
+    action do |*args|
+      puts 'another_command called!'
       args.each { |arg| puts "  * #{arg}" }
       args
     end

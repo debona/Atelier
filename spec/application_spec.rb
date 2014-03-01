@@ -7,48 +7,48 @@ describe Atelier::Application do
   subject { @app }
 
   describe '.instance' do
-    pending { its(:root_library) { should be_nil } }
+    pending { its(:root_command) { should be_nil } }
     its(:logger) { should be_a Logger }
 
     describe 'its side-effects' do
-      it 'Kernel methods should include :library' do
-        Kernel.methods.should include :library
+      it 'Kernel methods should include :command' do
+        Kernel.methods.should include :command
       end
 
-      it 'library should redirect to the app load_root_library method' do
-        @app.should_receive(:load_root_library).with(:name)
-        Kernel.library(:name) {}
+      it 'command should redirect to the app load_root_command method' do
+        @app.should_receive(:load_root_command).with(:name)
+        Kernel.command(:name) {}
       end
     end
   end
 
-  describe '#load_root_library' do
-    name = :lib_name
+  describe '#load_root_command' do
+    name = :cmd_name
 
-    before(:all) { @app.load_root_library(name) {} }
-    subject { @app.root_library }
+    before(:all) { @app.load_root_command(name) {} }
+    subject { @app.root_command }
 
-    it { should be_a Atelier::Library }
+    it { should be_a Atelier::Command }
     its(:name) { should == name }
   end
 
   describe '#run' do
-    context 'with an existing library file' do
+    context 'with an existing command file' do
       subject { @app }
 
-      it 'should load the library file as root library' do
+      it 'should load the command file as root command' do
         subject.run('spec/fixtures/sample.rb', :sample_action)
-        subject.root_library.name.should == :sample
+        subject.root_command.name.should == :sample
       end
-      it 'should run the :sample_action on the root_library ' do
-        root_library = Object.new
-        root_library.should_receive(:run).with(:sample_action)
-        subject.stub(:root_library) { root_library }
+      it 'should run the :sample_action on the root_command ' do
+        root_command = Object.new
+        root_command.should_receive(:run).with(:sample_action)
+        subject.stub(:root_command) { root_command }
         subject.run('spec/fixtures/sample.rb', :sample_action)
       end
     end
 
-    context 'with wrong library' do
+    context 'with wrong command' do
       it 'should display an error' do
         @app.logger.should_receive(:error)
         @app.run('this file does not exist.rb', 'action_one')
@@ -56,8 +56,8 @@ describe Atelier::Application do
     end
   end
 
-  describe '#locate_library' do
-    subject { @app.locate_library(file_name) }
+  describe '#locate_command' do
+    subject { @app.locate_command(file_name) }
 
     context 'with a file available from the $PATH' do
       let(:file_name) { :bash }
