@@ -7,23 +7,31 @@ module Atelier
       command(:commands, default: true) do
         description 'print the sub-commands'
 
-        action { @commands.each { |cmd_name, cmd| puts cmd_name } }
+        action do
+          cmd = super_command || self
+
+          cmd.commands.each { |cmd_name, cmd| puts cmd_name }
+        end
       end
 
       command(:help, default: true) do
         description 'print this message'
 
         action do
-          puts "#{name}: #{title}"
+          cmd = super_command || self
 
-          puts 'default actions:'
-          @actions.each do |action_name, action|
-            puts "  - #{name} #{action_name}" if action == :default
+          puts "#{cmd.name}: #{cmd.title}"
+          puts "#{cmd.description}"
+          puts ''
+
+          puts 'Default commands:'
+          cmd.commands.select.each do |command_name, command|
+            puts "  - #{cmd.name} #{command_name}" if command.default?
           end
 
-          puts 'actions:'
-          @actions.each do |action_name, action|
-            puts "  - #{name} #{action_name} #{action.synopsis}" unless action == :default
+          puts 'Commands:'
+          cmd.commands.each do |command_name, command|
+            puts "  - #{cmd.name} #{command_name}" unless command.default?
           end
         end
       end
