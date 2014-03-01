@@ -60,7 +60,9 @@ describe Atelier::CommandDSL do
     subject { @command.commands[:sub_cmd_name] }
 
     it { should be_a Atelier::Command }
-    its(:name)    { should == :sub_cmd_name }
+
+    its(:name)          { should == :sub_cmd_name }
+    its(:super_command) { should == @command }
   end
 
   describe '#load_command' do

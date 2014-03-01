@@ -9,6 +9,7 @@ module Atelier
     include ::Atelier::Default
 
     attr_reader :name, :commands
+    attr_accessor :super_command
 
     def initialize(name, options = {}, &block)
       @name = name
