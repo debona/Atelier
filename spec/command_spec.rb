@@ -18,6 +18,8 @@ describe Atelier::Command do
       }
       subject { Atelier::Command.new(:cmd_name, expected_options) {} }
 
+      its(:default?) { should == expected_options[:default] }
+
       [:title, :description, :commands, :action].each do |option_name|
         its(option_name) { should == expected_options[option_name] }
       end
