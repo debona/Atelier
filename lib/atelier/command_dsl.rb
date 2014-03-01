@@ -1,4 +1,3 @@
-require 'atelier/action'
 
 module Atelier
 
