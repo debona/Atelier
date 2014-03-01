@@ -9,6 +9,8 @@ describe Atelier::CommandDSL do
   class CmdClass
     include Atelier::CommandDSL
 
+    attr_reader :commands
+
   end
 
   before(:all) { @command = CmdClass.new }
@@ -55,7 +57,7 @@ describe Atelier::CommandDSL do
       @command.send(:command, :sub_cmd_name) {}
     end
 
-    subject { @command.send(:sub_cmd_name) }
+    subject { @command.commands[:sub_cmd_name] }
 
     it { should be_a Atelier::Command }
     its(:name)    { should == :sub_cmd_name }

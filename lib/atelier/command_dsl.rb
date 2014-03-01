@@ -37,7 +37,6 @@ module Atelier
       @commands ||= {}
       command = Command.new(cmd_name, options, &block)
       @commands[cmd_name] = command
-      method(cmd_name) { command }
     end
 
   end

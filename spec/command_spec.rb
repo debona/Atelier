@@ -52,25 +52,17 @@ describe Atelier::Command do
     it { should be_a Proc }
   end
 
-  describe 'commands' do
+  describe '#commands' do
     before(:all) do
       @cmd = Atelier::Command.new(:cmd_name) do
         command(:sub_cmd_name) { method(:sub_method) { :expected_result } }
       end
     end
 
-    describe '#commands' do
-      subject { @cmd.commands }
+    subject { @cmd.commands }
 
-      it { should have(3).item }
-      its([:sub_cmd_name]) { should be_a Atelier::Command }
-    end
-
-    describe '#sub_cmd_name' do
-      subject { @cmd.sub_cmd_name }
-
-      it { should be_a Atelier::Command }
-    end
+    it { should have(3).item }
+    its([:sub_cmd_name]) { should be_a Atelier::Command }
   end
 
   describe 'default commands' do
