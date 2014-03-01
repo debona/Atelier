@@ -32,9 +32,9 @@ module Atelier
       cmd_path.strip! if cmd_path
     end
 
-    def run(command_file, action, *parameters)
+    def run(command_file, *parameters)
       load(command_file)
-      root_command.run(action, *parameters)
+      root_command.run(*parameters)
     rescue Exception => e
       logger.error e
     end
