@@ -33,9 +33,9 @@ module Atelier
       instance_eval(cmd_script)
     end
 
-    def command(cmd_name, &block)
+    def command(cmd_name, options = {}, &block)
       @commands ||= {}
-      command = Command.new(cmd_name, &block)
+      command = Command.new(cmd_name, options, &block)
       @commands[cmd_name] = command
       method(cmd_name) { command }
     end
