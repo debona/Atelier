@@ -7,6 +7,21 @@ describe Atelier::Command do
   describe '#initialize' do
     subject { Atelier::Command.new(:cmd_name) {} }
     its(:name) { should == :cmd_name }
+
+    context 'with options' do
+      expected_options = {
+        default:     :expected_default,
+        title:       :expected_title,
+        description: :expected_description,
+        commands:    :expected_commands,
+        action:      :expected_action
+      }
+      subject { Atelier::Command.new(:cmd_name, expected_options) {} }
+
+      [:title, :description, :commands, :action].each do |option_name|
+        its(option_name) { should == expected_options[option_name] }
+      end
+    end
   end
 
   describe '#run' do

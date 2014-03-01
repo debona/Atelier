@@ -12,14 +12,15 @@ module Atelier
     attr_accessor :super_command
 
     def initialize(name, options = {}, &block)
-      @name = name
-      @title = ''
-      @description = ''
-      @commands = {}
-      @action = Proc.new {}
 
       load_default_commands unless options[:default]
 
+      @name        = name
+      @default     = options[:default]     || false
+      @title       = options[:title]       || ''
+      @description = options[:description] || ''
+      @commands    = options[:commands]    || {}
+      @action      = options[:action]      || Proc.new {}
       instance_eval &block
     end
 
