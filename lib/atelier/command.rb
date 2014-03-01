@@ -10,7 +10,7 @@ module Atelier
 
     attr_reader :name, :commands
 
-    def initialize(name, &block)
+    def initialize(name, options = {}, &block)
       @name = name
       @title = ''
       @description = ''
