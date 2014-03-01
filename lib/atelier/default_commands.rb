@@ -1,28 +1,33 @@
-require 'atelier/action'
 
 module Atelier
   module Default
 
-    COMMANDS = Action.new(:commands) do
-      description 'print the sub-commands'
-      block { @commands.each { |cmd_name, cmd| puts cmd_name } }
-    end
+    def load_default_commands
 
-    HELP = Action.new(:help) do
-      description 'print this message'
-      block do
-        puts "#{name}: #{title}"
+      command(:commands, default: true) do
+        description 'print the sub-commands'
 
-        puts 'default actions:'
-        @actions.each do |action_name, action|
-          puts "  - #{name} #{action_name}" if action == :default
-        end
+        action { @commands.each { |cmd_name, cmd| puts cmd_name } }
+      end
 
-        puts 'actions:'
-        @actions.each do |action_name, action|
-          puts "  - #{name} #{action_name} #{action.synopsis}" unless action == :default
+      command(:help, default: true) do
+        description 'print this message'
+
+        action do
+          puts "#{name}: #{title}"
+
+          puts 'default actions:'
+          @actions.each do |action_name, action|
+            puts "  - #{name} #{action_name}" if action == :default
+          end
+
+          puts 'actions:'
+          @actions.each do |action_name, action|
+            puts "  - #{name} #{action_name} #{action.synopsis}" unless action == :default
+          end
         end
       end
+
     end
   end
 end

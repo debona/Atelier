@@ -17,10 +17,7 @@ module Atelier
       @commands = {}
       @action = Proc.new {}
 
-      Default.constants.each do |constant|
-        command = Default.const_get(constant)
-        @commands[command.name] = command
-      end
+      load_default_commands unless options[:default]
 
       instance_eval &block
     end
