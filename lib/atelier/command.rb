@@ -13,7 +13,7 @@ module Atelier
 
     def initialize(name, options = {}, &block)
       @name        = name
-      @default     = options[:default]     || false
+      @default     = options[:default]
       @title       = options[:title]       || ''
       @description = options[:description] || ''
       @commands    = options[:commands]    || {}
@@ -24,7 +24,7 @@ module Atelier
     end
 
     def default?
-      @default
+      !! @default
     end
 
     def run(*parameters)
