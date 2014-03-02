@@ -35,12 +35,31 @@ describe Atelier::Command do
     subject { @cmd }
 
     context 'with parameters' do
+
       parameter       = :param
       expected_result = [parameter]
       subject { @cmd.run(parameter) }
 
       it { should be_a Array }
       it { should == expected_result }
+
+      context 'if arguments parsing is configured' do
+        before(:all) do
+          arguments_parser = Atelier::ArgumentsParser.new
+          arguments_parser.param(:first_arg)
+          @cmd = Atelier::Command.new(:cmd_name, arguments_parser: arguments_parser) do
+            action { |args| args }
+          end
+        end
+        subject { @cmd }
+
+        argument = :param
+        subject { @cmd.run(*[parameter, :ignored]) }
+
+        it { should be_a OpenStruct }
+        its(:first_arg) { should == argument }
+      end
+      
     end
 
     context 'with an existing sub-command' do
