@@ -9,7 +9,7 @@ describe Atelier::CommandDSL do
   class CmdClass
     include Atelier::CommandDSL
 
-    attr_reader :commands
+    attr_accessor :commands, :arguments_parser
 
   end
 
@@ -38,6 +38,19 @@ describe Atelier::CommandDSL do
     subject { @command }
 
     its(:methods) { should include :method_name }
+  end
+
+  describe '#param' do
+    before(:all) do
+      @command = CmdClass.new
+      @command.arguments_parser = Object.new
+    end
+    subject { @command }
+
+    it 'should delegate the arguments parsing description' do
+      subject.arguments_parser.should_receive(:param).with(:param_name)
+      subject.param(:param_name)
+    end
   end
 
   describe '#action' do
