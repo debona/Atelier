@@ -1,3 +1,4 @@
+require 'atelier/arguments_parser'
 
 module Atelier
 
@@ -13,6 +14,11 @@ module Atelier
       @description ||= ''
       @description = args.join("\n") unless args.empty?
       @description
+    end
+
+    def param(param_name)
+      @arguments_parser ||= ArgumentsParser.new
+      @arguments_parser.param(param_name)
     end
 
     def action(&block)
