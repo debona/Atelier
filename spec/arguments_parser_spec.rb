@@ -11,13 +11,17 @@ describe Atelier::ArgumentsParser do
   end
 
   describe '#parse' do
-    parameters = [:expected_arg, :not_expected]
+    parameters = [:first_value, :second_value, :not_expected]
     before(:all) { @arguments_parser = Atelier::ArgumentsParser.new }
 
     subject { @arguments_parser.parse(*parameters) }
-    before { @arguments_parser.param(:param_name) }
+    before do
+      @arguments_parser.param(:first_param)
+      @arguments_parser.param(:second_param)
+    end
 
-    its(:param_name) { should == :expected_arg }
+    its(:first_param) { should == :first_value }
+    its(:second_param) { should == :second_value }
   end
 
 end
