@@ -21,6 +21,11 @@ module Atelier
       @arguments_parser.param(param_name)
     end
 
+    def params(params_name)
+      @arguments_parser ||= ArgumentsParser.new
+      @arguments_parser.params(params_name)
+    end
+
     def action(&block)
       @action = block if block
       @action

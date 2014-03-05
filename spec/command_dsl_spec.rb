@@ -53,6 +53,19 @@ describe Atelier::CommandDSL do
     end
   end
 
+  describe '#params' do
+    before(:all) do
+      @command = CmdClass.new
+      @command.arguments_parser = Object.new
+    end
+    subject { @command }
+
+    it 'should delegate the arguments parsing description' do
+      subject.arguments_parser.should_receive(:params).with(:param_name)
+      subject.params(:param_name)
+    end
+  end
+
   describe '#action' do
     expected_proc = Proc.new { :overriden }
     before(:all) do
