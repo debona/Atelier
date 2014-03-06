@@ -37,14 +37,14 @@ describe Atelier::Application do
       subject { @app }
 
       it 'should load the command file as root command' do
-        subject.run('spec/fixtures/sample.rb', :sample_action)
+        subject.run('spec/fixtures/sample.rb', :sample_command)
         subject.root_command.name.should == :sample
       end
-      it 'should run the :sample_action on the root_command ' do
+      it 'should run the :sample_command on the root_command ' do
         root_command = Object.new
-        root_command.should_receive(:run).with(:sample_action)
+        root_command.should_receive(:run).with(:sample_command)
         subject.stub(:root_command) { root_command }
-        subject.run('spec/fixtures/sample.rb', :sample_action)
+        subject.run('spec/fixtures/sample.rb', :sample_command)
       end
     end
 
