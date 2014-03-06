@@ -72,7 +72,7 @@ describe Atelier::Command do
 
       it 'should call `run` on the sub-command' do
         subject.commands[:sub_cmd_name].should_receive(:run).with(:action_name, :param)
-        subject.run(:sub_cmd_name, :action_name, :param)
+        subject.run('sub_cmd_name', :action_name, :param)
       end
     end
   end
