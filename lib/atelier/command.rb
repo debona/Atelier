@@ -34,8 +34,8 @@ module Atelier
     end
 
     def run(*parameters)
-      if commands.key?(parameters.first)
-        commands[parameters.first].run(*parameters[1..-1])
+      if parameters.first && commands.key?(parameters.first.to_sym)
+        commands[parameters.first.to_sym].run(*parameters[1..-1])
       elsif @arguments_parser
         arguments = parse_arguments(*parameters)
         instance_exec(arguments, &@action)
