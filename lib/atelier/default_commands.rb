@@ -36,6 +36,17 @@ module Atelier
         end
       end
 
+      command(:completion, default: true) do
+        action do |*args|
+        end
+      end
+
+      command(:complete, default: true) do
+
+        action do |*args|
+        end
+      end
+
     end
   end
 end
