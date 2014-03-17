@@ -2,7 +2,7 @@ require 'ostruct'
 
 require 'atelier/command_dsl'
 require 'atelier/default_commands'
-require 'atelier/arguments_parser'
+require 'atelier/argument_parser'
 
 module Atelier
 
@@ -24,7 +24,7 @@ module Atelier
       @commands = default? ? {} : ::Atelier::Default.all
       @commands.merge!(options[:commands]) if options[:commands]
 
-      @arguments_parser = options[:arguments_parser]
+      @argument_parser = options[:argument_parser]
 
       @loading = block_given?
       load(&block) if block_given?
@@ -50,7 +50,7 @@ module Atelier
         command = commands[cmd_name]
         command.super_command = self # useful for default commands
         command.run(*parameters)
-      elsif @arguments_parser
+      elsif @argument_parser
         arguments = parse_arguments(*parameters)
         @action.call(arguments)
       else
@@ -61,7 +61,7 @@ module Atelier
     private
 
     def parse_arguments(*parameters)
-      @arguments_parser.parse(*parameters)
+      @argument_parser.parse(*parameters)
     end
 
   end

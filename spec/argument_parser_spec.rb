@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-require 'atelier/arguments_parser'
+require 'atelier/argument_parser'
 
-describe Atelier::ArgumentsParser do
+describe Atelier::ArgumentParser do
 
   describe '#param' do
     before { subject.param(:param_name) }
@@ -18,13 +18,13 @@ describe Atelier::ArgumentsParser do
 
   describe '#parse' do
     parameters = [:one, :two, :three, :four, :five]
-    let(:arguments_parser) { Atelier::ArgumentsParser.new }
-    subject { arguments_parser.parse(*parameters) }
+    let(:argument_parser) { Atelier::ArgumentParser.new }
+    subject { argument_parser.parse(*parameters) }
 
     context 'for non-variable arguments' do
       before do
-        arguments_parser.param(:first_param)
-        arguments_parser.param(:second_param)
+        argument_parser.param(:first_param)
+        argument_parser.param(:second_param)
       end
 
       its(:first_param)  { should == :one }
@@ -33,9 +33,9 @@ describe Atelier::ArgumentsParser do
 
     context 'for variable arguments' do
       before do
-        arguments_parser.param(:first_param)
-        arguments_parser.params(:var_params)
-        arguments_parser.param(:last_param)
+        argument_parser.param(:first_param)
+        argument_parser.params(:var_params)
+        argument_parser.param(:last_param)
       end
 
       its(:first_param) { should == :one }

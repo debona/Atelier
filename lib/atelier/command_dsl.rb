@@ -1,17 +1,17 @@
-require 'atelier/arguments_parser'
+require 'atelier/argument_parser'
 
 module Atelier
 
   module CommandDSL
 
     def param(param_name)
-      @arguments_parser ||= ArgumentsParser.new
-      @arguments_parser.param(param_name)
+      @argument_parser ||= ArgumentParser.new
+      @argument_parser.param(param_name)
     end
 
     def params(params_name)
-      @arguments_parser ||= ArgumentsParser.new
-      @arguments_parser.params(params_name)
+      @argument_parser ||= ArgumentParser.new
+      @argument_parser.params(params_name)
     end
 
     def action(&block)

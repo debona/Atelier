@@ -2,7 +2,7 @@ require 'ostruct'
 
 module Atelier
 
-  class ArgumentsParser
+  class ArgumentParser
 
     def initialize
       @arguments_range = {}

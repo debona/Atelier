@@ -9,7 +9,7 @@ describe Atelier::CommandDSL do
   class CmdClass
     include Atelier::CommandDSL
 
-    attr_accessor :commands, :arguments_parser
+    attr_accessor :commands, :argument_parser
 
   end
 
@@ -19,12 +19,12 @@ describe Atelier::CommandDSL do
   describe '#param' do
     before(:all) do
       @command = CmdClass.new
-      @command.arguments_parser = Object.new
+      @command.argument_parser = Object.new
     end
     subject { @command }
 
     it 'should delegate the arguments parsing description' do
-      subject.arguments_parser.should_receive(:param).with(:param_name)
+      subject.argument_parser.should_receive(:param).with(:param_name)
       subject.param(:param_name)
     end
   end
@@ -32,12 +32,12 @@ describe Atelier::CommandDSL do
   describe '#params' do
     before(:all) do
       @command = CmdClass.new
-      @command.arguments_parser = Object.new
+      @command.argument_parser = Object.new
     end
     subject { @command }
 
     it 'should delegate the arguments parsing description' do
-      subject.arguments_parser.should_receive(:params).with(:param_name)
+      subject.argument_parser.should_receive(:params).with(:param_name)
       subject.params(:param_name)
     end
   end

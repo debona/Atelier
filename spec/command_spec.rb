@@ -70,9 +70,9 @@ describe Atelier::Command do
 
       context 'if arguments parsing is configured' do
         before(:all) do
-          arguments_parser = Atelier::ArgumentsParser.new
-          arguments_parser.param(:first_arg)
-          @cmd = Atelier::Command.new(:cmd_name, arguments_parser: arguments_parser) do |c|
+          argument_parser = Atelier::ArgumentParser.new
+          argument_parser.param(:first_arg)
+          @cmd = Atelier::Command.new(:cmd_name, argument_parser: argument_parser) do |c|
             c.action { |args| args }
           end
         end
