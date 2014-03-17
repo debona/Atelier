@@ -94,4 +94,22 @@ describe 'default commands' do
     end
 
   end
+
+  describe 'completion' do
+    before(:all) do
+      @cmd = Atelier::Command.new(:cmd_name) {}
+    end
+
+    subject do
+      printed = ''
+      STDOUT.stub(:puts) { |output| printed << output }
+      @cmd.run(:completion)
+      printed
+    end
+
+    it 'should output shellscript that enable the bash completion' do
+      subject.should match '^[ ]+complete '
+    end
+  end
+
 end

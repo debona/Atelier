@@ -37,7 +37,23 @@ module Atelier
       end
 
       command(:completion, default: true) do
+        description 'Enable the completion with: eval "$(my_command.rb completion)"'
         action do |*args|
+          cmd = super_command || self
+
+          executable_name = File.basename(ARGV[0] || '')
+
+          puts <<-EOS
+            function __atelier_completion() {
+              local cmd=$1
+              shift
+              $cmd complete "$@"
+            }
+            function __completion__handler() {
+              COMPREPLY=( $( __atelier_completion "${COMP_WORDS[@]}" ) )
+            }
+            complete -o bashdefault -o default -F __completion__handler "#{executable_name}"
+          EOS
         end
       end
 
