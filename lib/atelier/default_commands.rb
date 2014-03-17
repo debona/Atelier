@@ -44,6 +44,20 @@ module Atelier
       command(:complete, default: true) do
 
         action do |*args|
+          cmd = super_command || self
+
+          if args.size <= 1
+            possibilities  = []
+            possibilities += Dir['*']
+            possibilities += Dir['.*']
+            possibilities -= ['.', '..']
+            possibilities += cmd.commands.keys
+            pattern = /^#{Regexp.escape(args.first || '')}/
+            puts possibilities.grep(pattern).join("\n")
+          elsif cmd.commands.key?(args.first.to_sym)
+            sub_command = args.first.to_sym
+            cmd.run(sub_command, :complete, *args[1..-1]) if cmd.commands[sub_command].commands.key?(:complete)
+          end
         end
       end
 
