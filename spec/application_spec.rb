@@ -3,7 +3,10 @@ require 'spec_helper'
 require 'atelier/application'
 
 describe Atelier::Application do
-  before(:all) { @app = Atelier::Application.instance }
+  before(:all) do
+    STDOUT.stub(:puts) {}
+    @app = Atelier::Application.instance
+  end
   subject { @app }
 
   describe '.instance' do
