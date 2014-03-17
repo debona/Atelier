@@ -97,7 +97,7 @@ describe Atelier::Command do
 
     subject { @cmd.commands }
 
-    it { should have(3).item }
+    it { should have(5).item }
     its([:sub_cmd_name]) { should be_a Atelier::Command }
   end
 
@@ -107,6 +107,8 @@ describe Atelier::Command do
 
     it { should include :help }
     it { should include :commands }
+    it { should include :complete }
+    it { should include :completion }
   end
 
 end
