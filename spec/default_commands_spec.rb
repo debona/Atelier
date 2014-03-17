@@ -5,6 +5,41 @@ require 'atelier/command'
 describe 'default commands' do
   subject { Atelier::Command.new(:cmd_name) {} }
 
+  describe 'help' do
+    expected_title = 'This is a dummy test command'
+
+    before(:all) do
+      @cmd = Atelier::Command.new(:cmd_name) do
+        title expected_title
+        command :sub_command do
+        end
+      end
+    end
+
+    subject do
+      printed = ''
+      STDOUT.stub(:puts) { |output| printed << output }
+      @cmd.run(:help)
+      printed
+    end
+
+    describe 'command description' do
+      it { should match 'cmd_name' }
+      it { should match expected_title }
+    end
+
+    describe 'default commands' do
+      it { should match 'help' }
+      it { should match 'completion' }
+      it { should match 'complete' }
+      it { should match 'commands' }
+    end
+
+    describe 'commands' do
+      it { should match 'sub_command' }
+    end
+  end
+
   describe 'complete' do
     before(:all) do
       @cmd = Atelier::Command.new(:cmd_name) do
