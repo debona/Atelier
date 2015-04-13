@@ -7,19 +7,7 @@ describe Atelier::Application do
   subject { @app }
 
   describe '.instance' do
-    pending { its(:root_command) { should be_nil } }
     its(:logger) { should be_a Logger }
-
-    describe 'its side-effects' do
-      it 'Kernel methods should include :command' do
-        Kernel.methods.should include :command
-      end
-
-      it 'command should redirect to the app load_root_command method' do
-        @app.should_receive(:load_root_command).with(:name)
-        Kernel.command(:name) {}
-      end
-    end
   end
 
   describe '#load_root_command' do
@@ -37,14 +25,14 @@ describe Atelier::Application do
       subject { @app }
 
       it 'should load the command file as root command' do
-        subject.run('spec/fixtures/sample.rb', :sample_command)
+        subject.run('fixtures/sample.rb', :sample_command)
         subject.root_command.name.should == :sample
       end
-      it 'should run the :sample_command on the root_command ' do
+      it 'should run the :sample_command on the root_command' do
         root_command = Object.new
         root_command.should_receive(:run).with(:sample_command)
         subject.stub(:root_command) { root_command }
-        subject.run('spec/fixtures/sample.rb', :sample_command)
+        subject.run('fixtures/sample.rb', :sample_command)
       end
     end
 

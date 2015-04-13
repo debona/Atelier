@@ -1,2 +1,1 @@
-
-require 'atelier/application'
+require 'atelier/globals'

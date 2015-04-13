@@ -15,14 +15,10 @@ module Atelier
       @root_command = nil
       @logger = Logger.new(STDERR) # TODO: make a module with that
       @logger.level = Logger::WARN
-
-      Kernel.send(:define_method, :command) do |name, &block|
-        Application.instance.load_root_command(name, &block)
-      end
     end
 
-    def load_root_command(name, &block)
-      @root_command = Command.new(name, &block)
+    def load_root_command(name, options= {}, &block)
+      @root_command = Command.new(name, options, &block)
     end
 
     def locate_command(file_name)
@@ -33,7 +29,7 @@ module Atelier
     end
 
     def run(command_file, *parameters)
-      load(command_file)
+      require command_file
       root_command.run(*parameters)
     rescue Exception => e
       logger.error e
