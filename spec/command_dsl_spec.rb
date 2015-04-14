@@ -78,17 +78,24 @@ describe Atelier::CommandDSL do
   end
 
   describe '#command' do
-    before(:all) do
-      @command = CmdClass.new
+    before(:all) { @command = CmdClass.new }
+
+    it 'should NOT trigger the app run method' do
+      Atelier::Application.instance.should_not_receive(:run)
       @command.send(:command, :sub_cmd_name) {}
     end
 
-    subject { @command.commands[:sub_cmd_name] }
+    describe 'created subcommand' do
+      before(:all) { @command.send(:command, :sub_cmd_name) {} }
 
-    it { should be_a Atelier::Command }
+      subject { @command.commands[:sub_cmd_name] }
 
-    its(:name)          { should == :sub_cmd_name }
-    its(:super_command) { should == @command }
+      it { should be_a Atelier::Command }
+
+      its(:name)          { should == :sub_cmd_name }
+      its(:super_command) { should == @command }
+    end
+
   end
 
   describe '#load_command' do

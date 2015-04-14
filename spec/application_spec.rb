@@ -21,25 +21,15 @@ describe Atelier::Application do
   end
 
   describe '#run' do
-    context 'with an existing command file' do
+    context 'when root_command is defined' do
       subject { @app }
 
-      it 'should load the command file as root command' do
-        subject.run('fixtures/sample.rb', :sample_command)
-        subject.root_command.name.should == :sample
-      end
       it 'should run the :sample_command on the root_command' do
         root_command = Object.new
         root_command.should_receive(:run).with(:sample_command)
         subject.stub(:root_command) { root_command }
-        subject.run('fixtures/sample.rb', :sample_command)
-      end
-    end
 
-    context 'with wrong command' do
-      it 'should display an error' do
-        @app.logger.should_receive(:error)
-        @app.run('this file does not exist.rb', 'action_one')
+        subject.run(:sample_command)
       end
     end
   end
