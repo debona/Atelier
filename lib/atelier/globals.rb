@@ -1,7 +1,9 @@
 require 'atelier/application'
 
-def pre_command(cmd_name, options = {}, &block)
+# TODO include a module that cause command is defined
+# TODO include the logger method?
 
+def pre_command(cmd_name, options = {}, &block)
 end
 
 def post_command(cmd_name, options = {}, &block)

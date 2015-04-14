@@ -1,5 +1,6 @@
-#!/usr/bin/env atelier
+#!/usr/bin/env ruby
 
+require 'atelier'
 
 command :sub_sample do
   title 'It is a sub command sample (nested in the sample command)'
