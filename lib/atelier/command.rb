@@ -26,7 +26,7 @@ module Atelier
       @arguments_parser = options[:arguments_parser]
 
       load_default_commands unless default?
-      instance_eval &block
+      yield(self)
     end
 
     def default?
@@ -38,9 +38,9 @@ module Atelier
         commands[parameters.first.to_sym].run(*parameters[1..-1])
       elsif @arguments_parser
         arguments = parse_arguments(*parameters)
-        instance_exec(arguments, &@action)
+        @action.call(arguments)
       else
-        instance_exec(*parameters, &@action)
+        @action.call(*parameters)
       end
     end
 

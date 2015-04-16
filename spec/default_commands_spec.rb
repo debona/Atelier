@@ -9,9 +9,9 @@ describe 'default commands' do
     expected_title = 'This is a dummy test command'
 
     before(:all) do
-      @cmd = Atelier::Command.new(:cmd_name) do
-        title expected_title
-        command :sub_command do
+      @cmd = Atelier::Command.new(:cmd_name) do |c|
+        c.title expected_title
+        c.command :sub_command do
         end
       end
     end
@@ -42,9 +42,9 @@ describe 'default commands' do
 
   describe 'complete' do
     before(:all) do
-      @cmd = Atelier::Command.new(:cmd_name) do
-        command :sub_command do
-          command :sub_sub_command do
+      @cmd = Atelier::Command.new(:cmd_name) do |c|
+        c.command :sub_command do |s|
+          s.command :sub_sub_command do
           end
         end
       end

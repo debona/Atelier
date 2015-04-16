@@ -99,7 +99,7 @@ describe Atelier::CommandDSL do
   end
 
   describe '#load_command' do
-    cmd_path = 'spec/fixtures/loaded.rb'
+    cmd_path = './spec/fixtures/loaded.rb'
 
     before do
       @command = CmdClass.new
@@ -107,7 +107,7 @@ describe Atelier::CommandDSL do
     end
 
     it 'should properly load the command as a ruby file' do
-      @command.instance_eval { @loaded_properly }.should be_true
+      TOPLEVEL_BINDING.eval('@loaded_properly').should be_true
     end
   end
 

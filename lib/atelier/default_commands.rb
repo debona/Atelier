@@ -4,21 +4,21 @@ module Atelier
 
     def load_default_commands
 
-      command(:commands, default: true) do
-        description 'print the sub-commands'
+      command(:commands, default: true) do |commands|
+        commands.description 'print the sub-commands'
 
-        action do
-          cmd = super_command || self
+        commands.action do
+          cmd = commands.super_command || commands
 
           cmd.commands.each { |cmd_name, cmd| puts cmd_name }
         end
       end
 
-      command(:help, default: true) do
-        description 'print this message'
+      command(:help, default: true) do |help|
+        help.description 'print this message'
 
-        action do
-          cmd = super_command || self
+        help.action do
+          cmd = help.super_command || help
 
           puts "#{cmd.name}: #{cmd.title}"
           puts "#{cmd.description}"
@@ -36,10 +36,10 @@ module Atelier
         end
       end
 
-      command(:completion, default: true) do
-        description 'Enable the completion with: eval "$(my_command.rb completion)"'
-        action do |*args|
-          cmd = super_command || self
+      command(:completion, default: true) do |completion|
+        completion.description 'Enable the completion with: eval "$(my_command.rb completion)"'
+        completion.action do |*args|
+          cmd = completion.super_command || completion
 
           executable_name = File.basename(ARGV[0] || '')
 
@@ -57,10 +57,10 @@ module Atelier
         end
       end
 
-      command(:complete, default: true) do
+      command(:complete, default: true) do |complete|
 
-        action do |*args|
-          cmd = super_command || self
+        complete.action do |*args|
+          cmd = complete.super_command || complete
 
           if args.size <= 1
             possibilities  = []

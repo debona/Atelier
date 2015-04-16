@@ -28,8 +28,8 @@ describe Atelier::Command do
 
   describe '#run' do
     before(:all) do
-      @cmd = Atelier::Command.new(:cmd_name) do
-        action { |*params| params }
+      @cmd = Atelier::Command.new(:cmd_name) do |c|
+        c.action { |*params| params }
       end
     end
     subject { @cmd }
@@ -47,8 +47,8 @@ describe Atelier::Command do
         before(:all) do
           arguments_parser = Atelier::ArgumentsParser.new
           arguments_parser.param(:first_arg)
-          @cmd = Atelier::Command.new(:cmd_name, arguments_parser: arguments_parser) do
-            action { |args| args }
+          @cmd = Atelier::Command.new(:cmd_name, arguments_parser: arguments_parser) do |c|
+            c.action { |args| args }
           end
         end
         subject { @cmd }
@@ -59,13 +59,13 @@ describe Atelier::Command do
         it { should be_a OpenStruct }
         its(:first_arg) { should == argument }
       end
-      
+
     end
 
     context 'with an existing sub-command' do
       before(:all) do
-        @cmd = Atelier::Command.new(:cmd_name) do
-          command(:sub_cmd_name) { }
+        @cmd = Atelier::Command.new(:cmd_name) do |c|
+          c.command(:sub_cmd_name) { }
         end
       end
       subject { @cmd }
@@ -79,8 +79,8 @@ describe Atelier::Command do
 
   describe '#action' do
     before(:all) do
-      @cmd = Atelier::Command.new(:cmd_name) do
-        action { :expected_result }
+      @cmd = Atelier::Command.new(:cmd_name) do |c|
+        c.action { :expected_result }
       end
     end
     subject { @cmd.action }
@@ -90,8 +90,8 @@ describe Atelier::Command do
 
   describe '#commands' do
     before(:all) do
-      @cmd = Atelier::Command.new(:cmd_name) do
-        command(:sub_cmd_name) { method(:sub_method) { :expected_result } }
+      @cmd = Atelier::Command.new(:cmd_name) do |c|
+        c.command(:sub_cmd_name) { |s| s.method(:sub_method) { :expected_result } }
       end
     end
 
