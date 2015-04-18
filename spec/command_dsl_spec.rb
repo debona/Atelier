@@ -99,7 +99,7 @@ describe Atelier::CommandDSL do
   end
 
   describe '#load_command' do
-    cmd_path = './spec/fixtures/loaded.rb'
+    cmd_path = 'spec/fixtures/loaded.rb'
 
     before do
       @command = CmdClass.new

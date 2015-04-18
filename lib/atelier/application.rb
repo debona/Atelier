@@ -23,7 +23,9 @@ module Atelier
 
     def locate_command(file_name)
       file_name = file_name.to_s
-      return file_name if File.exists?(file_name)
+      absolute_path = File.absolute_path(file_name)
+
+      return absolute_path if File.exists?(absolute_path)
       cmd_path = `which #{file_name}`
       cmd_path.strip! if cmd_path
     end
