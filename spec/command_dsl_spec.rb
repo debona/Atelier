@@ -93,7 +93,9 @@ describe Atelier::CommandDSL do
       it { should be_a Atelier::Command }
 
       its(:name)          { should == :sub_cmd_name }
-      its(:super_command) { should == @command }
+      it 'its super_command should equal the command' do
+        subject.super_command.should == @command
+      end
     end
 
   end

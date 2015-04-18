@@ -42,9 +42,9 @@ module Atelier
 
     def command(cmd_name, options = {}, &block)
       @commands ||= {}
-      command = Command.new(cmd_name, options, &block)
+      options[:super_command] = self
+      command = Application.instance.load_command(cmd_name, options, &block)
       @commands[cmd_name] = command
-      command.super_command = self
     end
 
   end

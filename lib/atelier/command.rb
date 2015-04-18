@@ -11,22 +11,22 @@ module Atelier
     include CommandDSL
     include ::Atelier::Default
 
-    attr_reader :name, :commands
-    attr_accessor :super_command
+    attr_reader :name, :commands, :super_command
 
-    def initialize(name, options = {}, &block)
-      @name        = name
-      @default     = options[:default]
-      @title       = options[:title]       || ''
-      @description = options[:description] || ''
-      @commands    = options[:commands]    || {}
-      @action      = options[:action]      || Proc.new {}
-
+    def initialize(name, options = {})
+      @name          = name
+      @super_command = options[:super_command]
+      @default       = options[:default]
+      @title         = options[:title]       || ''
+      @description   = options[:description] || ''
+      @commands      = options[:commands]    || {}
+      @action        = options[:action]      || Proc.new {}
 
       @arguments_parser = options[:arguments_parser]
 
       load_default_commands unless default?
-      yield(self)
+
+      yield(self) if block_given?
     end
 
     def default?

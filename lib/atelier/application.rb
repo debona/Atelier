@@ -12,13 +12,30 @@ module Atelier
     attr_reader :root_command, :logger
 
     def initialize
+      @loading_commands = []
       @root_command = nil
       @logger = Logger.new(STDERR) # TODO: make a module with that
       @logger.level = Logger::WARN
     end
 
-    def load_root_command(name, options= {}, &block)
-      @root_command = Command.new(name, options, &block)
+    def loading_command
+      @loading_commands.last
+    end
+
+    def load_root_command(name, options = {}, &block)
+      @root_command = Command.new(name, options)
+      @loading_commands << @root_command
+      yield(@root_command)
+      @loading_commands.pop
+      root_command
+    end
+
+    def load_command(name, options = {}, &block)
+      command = Command.new(name, options)
+      @loading_commands << command
+      yield(command)
+      @loading_commands.pop
+      command
     end
 
     def locate_command(file_name)
@@ -34,6 +51,7 @@ module Atelier
       root_command.run(*parameters)
     rescue Exception => e
       logger.error e
+      # TODO set exit status
     end
 
   end
