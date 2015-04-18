@@ -3,6 +3,8 @@ require 'atelier/application'
 # TODO include a module that cause command is defined
 # TODO include the logger method?
 
+# FIXME define that in a mixin, and include it in atelier.rb
+
 def command(cmd_name, options = {}, &block)
   app = Atelier::Application.instance
   loading_command = app.loading_command

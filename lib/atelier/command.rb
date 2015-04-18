@@ -12,6 +12,7 @@ module Atelier
     include ::Atelier::Default
 
     attr_reader :name, :commands, :super_command
+    attr_accessor :title, :description
 
     def initialize(name, options = {})
       @name          = name
@@ -24,7 +25,7 @@ module Atelier
 
       @arguments_parser = options[:arguments_parser]
 
-      load_default_commands unless default?
+      load_default_commands unless default? # FIXME extract that in a factory
 
       yield(self) if block_given?
     end

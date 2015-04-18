@@ -5,7 +5,7 @@ module Atelier
     def load_default_commands
 
       command(:commands, default: true) do |commands|
-        commands.description 'print the sub-commands'
+        commands.description = 'print the sub-commands'
 
         commands.action do
           cmd = commands.super_command || commands
@@ -15,7 +15,7 @@ module Atelier
       end
 
       command(:help, default: true) do |help|
-        help.description 'print this message'
+        help.description = 'print this message'
 
         help.action do
           cmd = help.super_command || help
@@ -37,7 +37,8 @@ module Atelier
       end
 
       command(:completion, default: true) do |completion|
-        completion.description 'Enable the completion with: eval "$(my_command.rb completion)"'
+        completion.description = 'Enable the completion with: eval "$(my_command.rb completion)"'
+
         completion.action do |*args|
           cmd = completion.super_command || completion
 

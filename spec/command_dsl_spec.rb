@@ -16,20 +16,6 @@ describe Atelier::CommandDSL do
   before(:all) { @command = CmdClass.new }
   subject { @command }
 
-  describe 'attributes' do
-    [
-      :title,
-      :description
-    ].each do |attr_name|
-      describe "##{attr_name}" do
-        value = "This is the #{attr_name} value"
-        before { @command.send(attr_name, value) }
-
-        its(attr_name) { should == value }
-      end
-    end
-  end
-
   describe '#method' do
     before(:all) do
       @command = CmdClass.new

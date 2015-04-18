@@ -10,7 +10,7 @@ describe 'default commands' do
 
     before(:all) do
       @cmd = Atelier::Command.new(:cmd_name) do |c|
-        c.title expected_title
+        c.title = expected_title
         c.command :sub_command do
         end
       end
