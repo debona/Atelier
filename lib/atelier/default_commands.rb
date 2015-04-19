@@ -2,23 +2,35 @@
 module Atelier
   module Default
 
-    def load_default_commands
+    def self.all
+      {
+        commands: commands,
+        help: help,
+        completion: completion,
+        complete: complete
+      }
+    end
 
-      command(:commands, default: true) do |commands|
-        commands.description = 'print the sub-commands'
-
-        commands.action do
-          cmd = commands.super_command || commands
+    def self.commands
+      unless @commands
+        @commands = ::Atelier::Command.new(:commands, default: true)
+        @commands.description = 'print the sub-commands'
+        @commands.action do
+          cmd = @commands.super_command
 
           cmd.commands.each { |cmd_name, cmd| puts cmd_name }
         end
       end
+      @commands
+    end
 
-      command(:help, default: true) do |help|
-        help.description = 'print this message'
+    def self.help
+      unless @help
+        @help = ::Atelier::Command.new(:help, default: true)
+        @help.description = 'print this message'
 
-        help.action do
-          cmd = help.super_command || help
+        @help.action do
+          cmd = @help.super_command
 
           puts "#{cmd.name}: #{cmd.title}"
           puts "#{cmd.description}"
@@ -35,12 +47,16 @@ module Atelier
           end
         end
       end
+      @help
+    end
 
-      command(:completion, default: true) do |completion|
-        completion.description = 'Enable the completion with: eval "$(my_command.rb completion)"'
+    def self.completion
+      unless @completion
+        @completion = ::Atelier::Command.new(:completion, default: true)
+        @completion.description = 'Enable the completion with: eval "$(my_command.rb completion)"'
 
-        completion.action do |*args|
-          cmd = completion.super_command || completion
+        @completion.action do |*args|
+          cmd = @completion.super_command
 
           executable_name = File.basename(ARGV[0] || '')
 
@@ -57,11 +73,15 @@ module Atelier
           EOS
         end
       end
+      @completion
+    end
 
-      command(:complete, default: true) do |complete|
+    def self.complete
+      unless @complete
+        @complete = ::Atelier::Command.new(:complete, default: true)
 
-        complete.action do |*args|
-          cmd = complete.super_command || complete
+        @complete.action do |*args|
+          cmd = @complete.super_command
 
           if args.size <= 1
             possibilities  = []
@@ -77,7 +97,8 @@ module Atelier
           end
         end
       end
-
+      @complete
     end
+
   end
 end

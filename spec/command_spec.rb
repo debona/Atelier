@@ -10,17 +10,18 @@ describe Atelier::Command do
 
     context 'with options' do
       expected_options = {
-        default:     :something_true,
-        title:       :expected_title,
-        description: :expected_description,
-        commands:    :expected_commands,
-        action:      :expected_action
+        default:       :something_true,
+        super_command: :expected_command,
+        title:         :expected_title,
+        description:   :expected_description,
+        commands:      { expected_commands: true },
+        action:        :expected_action
       }
       subject { Atelier::Command.new(:cmd_name, expected_options) }
 
       its(:default?) { should == true }
 
-      [:title, :description, :commands, :action].each do |option_name|
+      [:super_command, :title, :description, :commands, :action].each do |option_name|
         its(option_name) { should == expected_options[option_name] }
       end
     end
