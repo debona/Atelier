@@ -31,8 +31,9 @@ module Atelier
     def command(cmd_name, options = {}, &block)
       @commands ||= {}
       options[:super_command] = self
-      command = Application.instance.load_command(cmd_name, options, &block) # FIXME stop depending on App singleton
+      command = Command.new(cmd_name, options)
       @commands[cmd_name] = command
+      command.load(&block)
     end
 
   end

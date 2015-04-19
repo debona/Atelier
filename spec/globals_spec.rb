@@ -20,44 +20,29 @@ describe :Globals do
       end
 
       context 'when root_command is already defined' do
-        it 'should redirect to the app load_root_command method' do
+        it 'should log a warning' do
           command(:previous, {}) {}
           @app.logger.should_receive(:warn)
           command(:name, {}) {}
+        end
+
+        it 'should override the root command' do
+          command(:previous, {}) {}
+          command(:override, {}) {}
+          @app.root_command.name.should == :override
         end
       end
     end
 
     context 'when another command is loading' do
-
-      before(:all) do
-        @root = nil
-        @loading = nil
-        @new_cmd = nil
-
+      it 'should forward the command call on the loading command' do
         command(:root, {}) do |root|
-          @root = root
           command(:loading, {}) do |loading|
-            @loading = loading
-            command(:new_cmd, {}) do |new_cmd|
-              @new_cmd = new_cmd
-            end
+            loading.should_receive(:command).with(:new_cmd, {})
+            command(:new_cmd, {}) {}
           end
         end
       end
-
-      describe 'the loading command' do
-        subject { @loading }
-
-        its(:commands) { should include(:new_cmd) }
-      end
-
-      describe 'the new command super_command' do
-        subject { @new_cmd.super_command }
-
-        its(:name) { should == :loading }
-      end
-
     end
 
   end

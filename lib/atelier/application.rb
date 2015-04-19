@@ -12,30 +12,27 @@ module Atelier
     attr_reader :root_command, :logger
 
     def initialize
-      @loading_commands = []
       @root_command = nil
       @logger = Logger.new(STDERR) # TODO: make a module with that
       @logger.level = Logger::WARN
     end
 
     def loading_command
-      @loading_commands.last
+      return nil unless @root_command && @root_command.loading?
+
+      command = @root_command
+
+      while command.commands.values.select(&:loading?).last # while there is a loading sub command
+        command = command.commands.values.select(&:loading?).last
+      end
+
+      command
     end
 
     def load_root_command(name, options = {}, &block)
       @root_command = Command.new(name, options)
-      @loading_commands << @root_command
-      yield(@root_command)
-      @loading_commands.pop
-      root_command
-    end
-
-    def load_command(name, options = {}, &block)
-      command = Command.new(name, options)
-      @loading_commands << command
-      yield(command)
-      @loading_commands.pop
-      command
+      @root_command.load(&block)
+      @root_command
     end
 
     def locate_command(file_name)

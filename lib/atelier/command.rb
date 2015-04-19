@@ -14,7 +14,7 @@ module Atelier
     attr_reader :name, :commands, :super_command
     attr_accessor :title, :description
 
-    def initialize(name, options = {})
+    def initialize(name, options = {}, &block)
       @name          = name
       @super_command = options[:super_command]
       @default       = options[:default]
@@ -25,9 +25,19 @@ module Atelier
 
       @arguments_parser = options[:arguments_parser]
 
-      load_default_commands unless default? # FIXME extract that in a factory
+      @loading = block_given?
+      load_default_commands unless default? # FIXME avoid to load them dynamically
+      load(&block) if block_given?
+    end
 
-      yield(self) if block_given?
+    def loading?
+      @loading
+    end
+
+    def load
+      @loading = true
+      yield(self)
+      @loading = false
     end
 
     def default?

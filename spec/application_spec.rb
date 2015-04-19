@@ -20,6 +20,30 @@ describe Atelier::Application do
     its(:name) { should == name }
   end
 
+  describe '#loading_command' do
+    subject { @app.loading_command }
+
+    context 'while there is no loading command' do
+      it { should == nil }
+    end
+
+    context 'while the root command is loading' do
+      it 'should return the root command' do
+        @app.load_root_command(:root_command) { |r| subject.should == r }
+      end
+    end
+
+    context 'while commands are loading' do
+      it 'should return the sub command' do
+        @app.load_root_command(:root_command) do |r|
+          r.command(:command) do |c|
+            c.command(:another_command) { |a| subject.should == a }
+          end
+        end
+      end
+    end
+  end
+
   describe '#run' do
     context 'when root_command is defined' do
       subject { @app }
