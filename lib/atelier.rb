@@ -1,2 +1,3 @@
+require 'atelier/globals'
 
-require 'atelier/application'
+include Atelier::Globals

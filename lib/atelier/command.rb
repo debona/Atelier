@@ -9,38 +9,52 @@ module Atelier
   class Command
 
     include CommandDSL
-    include ::Atelier::Default
 
     attr_reader :name, :commands
-    attr_accessor :super_command
+    attr_accessor :title, :description, :super_command
 
     def initialize(name, options = {}, &block)
-      @name        = name
-      @default     = options[:default]
-      @title       = options[:title]       || ''
-      @description = options[:description] || ''
-      @commands    = options[:commands]    || {}
-      @action      = options[:action]      || Proc.new {}
+      @name          = name
+      @super_command = options[:super_command]
+      @default       = options[:default]     || false
+      @title         = options[:title]       || ''
+      @description   = options[:description] || ''
+      @action        = options[:action]      || Proc.new {}
 
+      @commands = default? ? {} : ::Atelier::Default.all
+      @commands.merge!(options[:commands]) if options[:commands]
 
       @arguments_parser = options[:arguments_parser]
 
-      load_default_commands unless default?
-      instance_eval &block
+      @loading = block_given?
+      load(&block) if block_given?
+    end
+
+    def loading?
+      !!@loading
+    end
+
+    def load
+      @loading = true
+      yield(self)
+      @loading = false
     end
 
     def default?
-      !! @default
+      !!@default
     end
 
     def run(*parameters)
       if parameters.first && commands.key?(parameters.first.to_sym)
-        commands[parameters.first.to_sym].run(*parameters[1..-1])
+        cmd_name = parameters.shift.to_sym
+        command = commands[cmd_name]
+        command.super_command = self # useful for default commands
+        command.run(*parameters)
       elsif @arguments_parser
         arguments = parse_arguments(*parameters)
-        instance_exec(arguments, &@action)
+        @action.call(arguments)
       else
-        instance_exec(*parameters, &@action)
+        @action.call(*parameters)
       end
     end
 

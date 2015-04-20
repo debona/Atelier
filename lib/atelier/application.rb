@@ -15,28 +15,40 @@ module Atelier
       @root_command = nil
       @logger = Logger.new(STDERR) # TODO: make a module with that
       @logger.level = Logger::WARN
-
-      Kernel.send(:define_method, :command) do |name, &block|
-        Application.instance.load_root_command(name, &block)
-      end
     end
 
-    def load_root_command(name, &block)
-      @root_command = Command.new(name, &block)
+    def loading_command
+      return nil unless @root_command && @root_command.loading?
+
+      command = @root_command
+
+      while command.commands.values.select(&:loading?).last # while there is a loading sub command
+        command = command.commands.values.select(&:loading?).last
+      end
+
+      command
+    end
+
+    def load_root_command(name, options = {}, &block)
+      @root_command = Command.new(name, options)
+      @root_command.load(&block)
+      @root_command
     end
 
     def locate_command(file_name)
       file_name = file_name.to_s
-      return file_name if File.exists?(file_name)
+      absolute_path = File.absolute_path(file_name)
+
+      return absolute_path if File.exists?(absolute_path)
       cmd_path = `which #{file_name}`
       cmd_path.strip! if cmd_path
     end
 
-    def run(command_file, *parameters)
-      load(command_file)
+    def run(*parameters)
       root_command.run(*parameters)
     rescue Exception => e
       logger.error e
+      # TODO set exit status
     end
 
   end

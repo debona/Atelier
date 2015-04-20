@@ -16,30 +16,6 @@ describe Atelier::CommandDSL do
   before(:all) { @command = CmdClass.new }
   subject { @command }
 
-  describe 'attributes' do
-    [
-      :title,
-      :description
-    ].each do |attr_name|
-      describe "##{attr_name}" do
-        value = "This is the #{attr_name} value"
-        before { @command.send(attr_name, value) }
-
-        its(attr_name) { should == value }
-      end
-    end
-  end
-
-  describe '#method' do
-    before(:all) do
-      @command = CmdClass.new
-      @command.send(:method, :method_name) {}
-    end
-    subject { @command }
-
-    its(:methods) { should include :method_name }
-  end
-
   describe '#param' do
     before(:all) do
       @command = CmdClass.new
@@ -78,17 +54,26 @@ describe Atelier::CommandDSL do
   end
 
   describe '#command' do
-    before(:all) do
-      @command = CmdClass.new
+    before(:all) { @command = CmdClass.new }
+
+    it 'should NOT trigger the app run method' do
+      Atelier::Application.instance.should_not_receive(:run)
       @command.send(:command, :sub_cmd_name) {}
     end
 
-    subject { @command.commands[:sub_cmd_name] }
+    describe 'created subcommand' do
+      before(:all) { @command.send(:command, :sub_cmd_name) {} }
 
-    it { should be_a Atelier::Command }
+      subject { @command.commands[:sub_cmd_name] }
 
-    its(:name)          { should == :sub_cmd_name }
-    its(:super_command) { should == @command }
+      it { should be_a Atelier::Command }
+
+      its(:name)          { should == :sub_cmd_name }
+      it 'its super_command should equal the command' do
+        subject.super_command.should == @command
+      end
+    end
+
   end
 
   describe '#load_command' do
@@ -100,7 +85,7 @@ describe Atelier::CommandDSL do
     end
 
     it 'should properly load the command as a ruby file' do
-      @command.instance_eval { @loaded_properly }.should be_true
+      TOPLEVEL_BINDING.eval('@loaded_properly').should be_true
     end
   end
 

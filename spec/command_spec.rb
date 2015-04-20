@@ -5,31 +5,56 @@ require 'atelier/command'
 describe Atelier::Command do
 
   describe '#initialize' do
-    subject { Atelier::Command.new(:cmd_name) {} }
+    subject { Atelier::Command.new(:cmd_name) }
     its(:name) { should == :cmd_name }
 
     context 'with options' do
       expected_options = {
-        default:     :something_true,
-        title:       :expected_title,
-        description: :expected_description,
-        commands:    :expected_commands,
-        action:      :expected_action
+        default:       :something_true,
+        super_command: :expected_command,
+        title:         :expected_title,
+        description:   :expected_description,
+        commands:      { expected_commands: true },
+        action:        :expected_action
       }
-      subject { Atelier::Command.new(:cmd_name, expected_options) {} }
+      subject { Atelier::Command.new(:cmd_name, expected_options) }
 
       its(:default?) { should == true }
 
-      [:title, :description, :commands, :action].each do |option_name|
+      [:super_command, :title, :description, :commands, :action].each do |option_name|
         its(option_name) { should == expected_options[option_name] }
       end
+    end
+
+    context 'with a block' do
+      expected_block = Proc.new { :expected_block }
+
+      it 'should forward the block to the load method' do
+        Atelier::Command.any_instance.stub(:load) { |&block| block.should == expected_block }
+        c = Atelier::Command.new(:cmd_name, { default: true }, &expected_block)
+        c.should have_received(:load).once
+      end
+    end
+  end
+
+  describe '#load' do
+    subject { Atelier::Command.new(:cmd_name, { default: true } ) } # default options avoid to get several command instance created
+
+    it 'should give the command to the block' do
+      subject.load { |cmd_name| cmd_name.should == subject }
+    end
+
+    it 'should be loading only when the block is executing' do
+      subject.loading?.should be_false
+      subject.load { subject.loading?.should be_true }
+      subject.loading?.should be_false
     end
   end
 
   describe '#run' do
     before(:all) do
-      @cmd = Atelier::Command.new(:cmd_name) do
-        action { |*params| params }
+      @cmd = Atelier::Command.new(:cmd_name) do |c|
+        c.action { |*params| params }
       end
     end
     subject { @cmd }
@@ -47,8 +72,8 @@ describe Atelier::Command do
         before(:all) do
           arguments_parser = Atelier::ArgumentsParser.new
           arguments_parser.param(:first_arg)
-          @cmd = Atelier::Command.new(:cmd_name, arguments_parser: arguments_parser) do
-            action { |args| args }
+          @cmd = Atelier::Command.new(:cmd_name, arguments_parser: arguments_parser) do |c|
+            c.action { |args| args }
           end
         end
         subject { @cmd }
@@ -59,13 +84,13 @@ describe Atelier::Command do
         it { should be_a OpenStruct }
         its(:first_arg) { should == argument }
       end
-      
+
     end
 
     context 'with an existing sub-command' do
       before(:all) do
-        @cmd = Atelier::Command.new(:cmd_name) do
-          command(:sub_cmd_name) { }
+        @cmd = Atelier::Command.new(:cmd_name) do |c|
+          c.command(:sub_cmd_name) { }
         end
       end
       subject { @cmd }
@@ -79,8 +104,8 @@ describe Atelier::Command do
 
   describe '#action' do
     before(:all) do
-      @cmd = Atelier::Command.new(:cmd_name) do
-        action { :expected_result }
+      @cmd = Atelier::Command.new(:cmd_name) do |c|
+        c.action { :expected_result }
       end
     end
     subject { @cmd.action }
@@ -90,15 +115,26 @@ describe Atelier::Command do
 
   describe '#commands' do
     before(:all) do
-      @cmd = Atelier::Command.new(:cmd_name) do
-        command(:sub_cmd_name) { method(:sub_method) { :expected_result } }
+      @sub = nil
+      @cmd = Atelier::Command.new(:cmd_name) do |c|
+        c.command(:sub_cmd_name) { |sub| @sub = sub }
       end
     end
 
     subject { @cmd.commands }
 
     it { should have(5).item }
-    its([:sub_cmd_name]) { should be_a Atelier::Command }
+
+    describe 'its sub command' do
+      subject { @cmd.commands[:sub_cmd_name] }
+
+      it { should be_a Atelier::Command }
+      its(:name) { should == :sub_cmd_name }
+
+      it 'its super_command should equal the parent command' do
+        subject.super_command.should == @cmd
+      end
+    end
   end
 
   describe 'default commands' do

@@ -1,3 +1,8 @@
+PATH
+  remote: .
+  specs:
+    atelier (0.0.0)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -40,6 +45,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  atelier!
   byebug
   coveralls
   rspec

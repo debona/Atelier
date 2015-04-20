@@ -2,16 +2,40 @@ require 'spec_helper'
 
 require 'atelier/command'
 
-describe 'default commands' do
+describe 'default command' do
   subject { Atelier::Command.new(:cmd_name) {} }
+
+  default_commands = ['commands', 'help', 'completion', 'complete' ]
+
+  describe 'commands' do
+    before(:all) do
+      @cmd = Atelier::Command.new(:cmd_name) do |c|
+        c.command :sub_command do |s|
+          s.command :sub_sub_command do
+          end
+        end
+      end
+    end
+
+    subject do
+      printed = []
+      STDOUT.stub(:puts) { |output| printed << output.to_s.strip }
+      @cmd.run(:commands)
+      printed
+    end
+
+    sub_commands = ['sub_command']
+
+    it { should match_array default_commands + sub_commands }
+  end
 
   describe 'help' do
     expected_title = 'This is a dummy test command'
 
     before(:all) do
-      @cmd = Atelier::Command.new(:cmd_name) do
-        title expected_title
-        command :sub_command do
+      @cmd = Atelier::Command.new(:cmd_name) do |c|
+        c.title = expected_title
+        c.command :sub_command do
         end
       end
     end
@@ -42,9 +66,9 @@ describe 'default commands' do
 
   describe 'complete' do
     before(:all) do
-      @cmd = Atelier::Command.new(:cmd_name) do
-        command :sub_command do
-          command :sub_sub_command do
+      @cmd = Atelier::Command.new(:cmd_name) do |c|
+        c.command :sub_command do |s|
+          s.command :sub_sub_command do
           end
         end
       end
@@ -92,7 +116,6 @@ describe 'default commands' do
 
       it { should match_array files + default_commands + ['sub_sub_command'] }
     end
-
   end
 
   describe 'completion' do

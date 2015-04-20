@@ -1,8 +1,0 @@
-#!/usr/bin/env ruby
-
-require 'atelier'
-
-# TODO include a module that cause command is defined
-# TODO include the logger method?
-
-app = Atelier::Application.instance.run(*ARGV)

@@ -4,18 +4,6 @@ module Atelier
 
   module CommandDSL
 
-    def title(*args)
-      @title ||= ''
-      @title = args.join(' ') unless args.empty?
-      @title
-    end
-
-    def description(*args)
-      @description ||= ''
-      @description = args.join("\n") unless args.empty?
-      @description
-    end
-
     def param(param_name)
       @arguments_parser ||= ArgumentsParser.new
       @arguments_parser.param(param_name)
@@ -31,23 +19,17 @@ module Atelier
       @action
     end
 
-    private
-
-    def method(name, &block)
-      (class << self; self; end).send(:define_method, name, &block)
-    end
-
     def load_command(cmd_name)
-      cmd_path = Application.instance.locate_command cmd_name
-      cmd_script = File.open(cmd_path).read
-      instance_eval(cmd_script)
+      cmd_path = Application.instance.locate_command cmd_name # FIXME stop depending on App singleton
+      require(cmd_path) unless cmd_path.nil? || cmd_path.empty?
     end
 
     def command(cmd_name, options = {}, &block)
       @commands ||= {}
-      command = Command.new(cmd_name, options, &block)
+      options[:super_command] = self
+      command = Command.new(cmd_name, options)
       @commands[cmd_name] = command
-      command.super_command = self
+      command.load(&block)
     end
 
   end

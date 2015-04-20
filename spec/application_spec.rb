@@ -7,19 +7,7 @@ describe Atelier::Application do
   subject { @app }
 
   describe '.instance' do
-    pending { its(:root_command) { should be_nil } }
     its(:logger) { should be_a Logger }
-
-    describe 'its side-effects' do
-      it 'Kernel methods should include :command' do
-        Kernel.methods.should include :command
-      end
-
-      it 'command should redirect to the app load_root_command method' do
-        @app.should_receive(:load_root_command).with(:name)
-        Kernel.command(:name) {}
-      end
-    end
   end
 
   describe '#load_root_command' do
@@ -32,26 +20,50 @@ describe Atelier::Application do
     its(:name) { should == name }
   end
 
-  describe '#run' do
-    context 'with an existing command file' do
-      subject { @app }
+  describe '#loading_command' do
+    subject { @app.loading_command }
 
-      it 'should load the command file as root command' do
-        subject.run('spec/fixtures/sample.rb', :sample_command)
-        subject.root_command.name.should == :sample
-      end
-      it 'should run the :sample_command on the root_command ' do
-        root_command = Object.new
-        root_command.should_receive(:run).with(:sample_command)
-        subject.stub(:root_command) { root_command }
-        subject.run('spec/fixtures/sample.rb', :sample_command)
+    context 'while there is no loading command' do
+      it { should == nil }
+    end
+
+    context 'while the root command is loading' do
+      it 'should return the root command' do
+        @app.load_root_command(:root_command) { |r| subject.should == r }
       end
     end
 
-    context 'with wrong command' do
-      it 'should display an error' do
-        @app.logger.should_receive(:error)
-        @app.run('this file does not exist.rb', 'action_one')
+    context 'while commands are loading' do
+      it 'should return the sub command' do
+        @app.load_root_command(:root_command) do |r|
+          r.command(:command) do |c|
+            c.command(:another_command) { |a| subject.should == a }
+          end
+        end
+      end
+    end
+  end
+
+  describe '#run' do
+    context 'when root_command is defined' do
+      subject { @app }
+
+      it 'should run the :sample_command on the root_command' do
+        root_command = Object.new
+        root_command.should_receive(:run).with(:sample_command)
+        subject.stub(:root_command) { root_command }
+
+        subject.run(:sample_command)
+      end
+
+      it 'should log an error on exception' do
+        e = RuntimeError.new('an exception')
+        root_command = Object.new
+        root_command.stub(:run) { raise e }
+        subject.stub(:root_command) { root_command }
+
+        subject.logger.should_receive(:error).with(e)
+        subject.run(:sample_command)
       end
     end
   end
