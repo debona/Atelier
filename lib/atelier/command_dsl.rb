@@ -19,10 +19,6 @@ module Atelier
       @action
     end
 
-    def method(name, &block)
-      (class << self; self; end).send(:define_method, name, &block)
-    end
-
     def load_command(cmd_name)
       cmd_path = Application.instance.locate_command cmd_name # FIXME stop depending on App singleton
       require(cmd_path) unless cmd_path.nil? || cmd_path.empty?

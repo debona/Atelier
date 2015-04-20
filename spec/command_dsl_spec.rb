@@ -16,16 +16,6 @@ describe Atelier::CommandDSL do
   before(:all) { @command = CmdClass.new }
   subject { @command }
 
-  describe '#method' do
-    before(:all) do
-      @command = CmdClass.new
-      @command.send(:method, :method_name) {}
-    end
-    subject { @command }
-
-    its(:methods) { should include :method_name }
-  end
-
   describe '#param' do
     before(:all) do
       @command = CmdClass.new
