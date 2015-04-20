@@ -55,6 +55,16 @@ describe Atelier::Application do
 
         subject.run(:sample_command)
       end
+
+      it 'should log an error on exception' do
+        e = RuntimeError.new('an exception')
+        root_command = Object.new
+        root_command.stub(:run) { raise e }
+        subject.stub(:root_command) { root_command }
+
+        subject.logger.should_receive(:error).with(e)
+        subject.run(:sample_command)
+      end
     end
   end
 
