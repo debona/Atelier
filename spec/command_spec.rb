@@ -81,8 +81,7 @@ describe Atelier::Command do
         argument = :param
         subject { @cmd.run(*[parameter, :ignored]) }
 
-        it { should be_a OpenStruct }
-        its(:first_arg) { should == argument }
+        its([:first_arg]) { should == argument }
       end
 
     end

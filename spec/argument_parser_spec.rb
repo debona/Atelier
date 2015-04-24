@@ -27,8 +27,8 @@ describe Atelier::ArgumentParser do
         argument_parser.param(:second_param)
       end
 
-      its(:first_param)  { should == :one }
-      its(:second_param) { should == :two }
+      its([:first_param])  { should == :one }
+      its([:second_param]) { should == :two }
     end
 
     context 'for variable arguments' do
@@ -38,9 +38,9 @@ describe Atelier::ArgumentParser do
         argument_parser.param(:last_param)
       end
 
-      its(:first_param) { should == :one }
-      its(:var_params)  { should == [:two, :three, :four] }
-      its(:last_param)  { should == :five }
+      its([:first_param]) { should == :one }
+      its([:var_params])  { should == [:two, :three, :four] }
+      its([:last_param])  { should == :five }
 
     end
   end

@@ -1,4 +1,3 @@
-require 'ostruct'
 
 module Atelier
 
@@ -31,7 +30,7 @@ module Atelier
         parsed[name] = parameters.slice!(arity)
       end
 
-      OpenStruct.new(parsed)
+      parsed
     end
 
   end
