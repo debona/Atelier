@@ -4,9 +4,9 @@ require 'atelier/application'
 
 describe Atelier::Application do
   before(:all) do
-    STDOUT.stub(:puts) {}
     @app = Atelier::Application.instance
   end
+  before { @app.logger.stub(:warn) { nil } }
   subject { @app }
 
   describe '.instance' do
@@ -16,11 +16,23 @@ describe Atelier::Application do
   describe '#load_root_command' do
     name = :cmd_name
 
-    before(:all) { @app.load_root_command(name) {} }
+    before { @app.load_root_command(name) {} }
     subject { @app.root_command }
 
     it { should be_a Atelier::Command }
     its(:name) { should == name }
+
+    context 'when a root command is already defined' do
+      it 'should log a warning' do
+        @app.logger.should_receive(:warn)
+        @app.load_root_command(:another, {}) {}
+      end
+
+      it 'should override the root command' do
+        @app.load_root_command(:override, {}) {}
+        @app.root_command.name.should == :override
+      end
+    end
   end
 
   describe '#loading_command' do
