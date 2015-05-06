@@ -6,25 +6,36 @@ describe Atelier::Globals do
 
   class GlobalClass
     include Atelier::Globals
-
-    attr_accessor :application
   end
 
-  before(:all) do
-    @global = GlobalClass.new
-    @global.application = Atelier::Application.send(:new)
-  end
+  describe '.application' do
+    before(:all) do
+      @global = GlobalClass.new
+    end
 
-  let(:root_command) { nil }
-  let(:loading_command) { nil }
+    subject { @global }
 
-  before do
-    @global.application.logger.stub(:warn) { nil }
-    @global.application.instance_eval { @root_command = root_command }
-    @global.application.stub(:loading_command) { loading_command }
+    it 'should return every time the same application' do
+      subject.application.should == subject.application
+    end
   end
 
   describe '.command' do
+
+    before(:all) do
+      @global = GlobalClass.new
+      @app = Atelier::Application.send(:new)
+    end
+
+    let(:root_command) { nil }
+    let(:loading_command) { nil }
+
+    before do
+      @global.stub(:application) { @app }
+      @global.application.logger.stub(:warn) { nil }
+      @global.application.instance_eval { @root_command = root_command }
+      @global.application.stub(:loading_command) { loading_command }
+    end
 
     context 'when NO other command is loading' do
       it 'should redirect to the app load_root_command method' do
