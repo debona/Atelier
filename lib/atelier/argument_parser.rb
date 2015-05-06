@@ -23,7 +23,8 @@ module Atelier
       @arguments_range[name] = 0..-1
     end
 
-    def parse(*parameters)
+    def parse(args)
+      parameters = args.dup
       parsed = {}
 
       @arguments_range.each do |name, arity|

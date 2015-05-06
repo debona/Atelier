@@ -19,7 +19,7 @@ describe Atelier::ArgumentParser do
   describe '#parse' do
     parameters = [:one, :two, :three, :four, :five]
     let(:argument_parser) { Atelier::ArgumentParser.new }
-    subject { argument_parser.parse(*parameters) }
+    subject { argument_parser.parse(parameters) }
 
     context 'for non-variable arguments' do
       before do
