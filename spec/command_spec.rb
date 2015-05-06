@@ -51,37 +51,114 @@ describe Atelier::Command do
     end
   end
 
+  describe '#parse_options!' do
+    switch_name = '--first'
+    option_name = :first
+
+    before(:all) do
+      @cmd = Atelier::Command.new(:cmd_name)
+      @cmd.option(option_name, "#{switch_name} VALUE")
+      @cmd
+    end
+
+    it 'should forward the message to option_parser' do
+      params = ['arg1', 'arg2']
+      @cmd.option_parser.should_receive(:parse).with(params)
+      @cmd.send(:parse_options!, params)
+    end
+
+    context 'when parsing declared options' do
+      expected_value = 'expected_value'
+
+      subject { @cmd.send(:parse_options!, ['arg1', switch_name, expected_value, 'arg2']) }
+
+      it { should match_array ['arg1', 'arg2'] }
+
+      describe 'its options' do
+        subject { @cmd.options }
+
+        it { should be_a Hash }
+        its([option_name]) { should == expected_value }
+      end
+    end
+
+    context 'when parsing undeclared options' do
+      subject { @cmd }
+
+      it 'should raise ' do
+        expect { subject.send(:parse_options!, ['arg1', '--undeclared', 'arg2']) }.to raise_error(OptionParser::InvalidOption)
+      end
+    end
+  end
+
+  describe '#parse_arguments' do
+    before(:all) do
+      argument_parser = Atelier::ArgumentParser.new
+      argument_parser.param(:first_arg)
+      @cmd = Atelier::Command.new(:cmd_name, argument_parser: argument_parser)
+    end
+
+    subject { @cmd }
+
+    it 'should forward the message to argument_parser' do
+      params = ['arg1', 'arg2']
+      @cmd.argument_parser.should_receive(:parse).with(params)
+      @cmd.send(:parse_arguments, params)
+    end
+  end
+
   describe '#run' do
     before(:all) do
-      @cmd = Atelier::Command.new(:cmd_name) do |c|
-        c.action { |*params| params }
-      end
+      @cmd = Atelier::Command.new(:cmd_name)
+      @cmd.action { |*params| params }
     end
     subject { @cmd }
 
-    context 'with parameters' do
+    context 'with options' do
+      it 'should receive parse_options!' do
+        params = ['arg1', 'arg2']
+        @cmd.stub(:parse_options!)
+        @cmd.should_receive(:parse_options!).with(params)
+        @cmd.run(*params)
+      end
+    end
 
+    context 'with parameters' do
       parameter       = :param
       expected_result = [parameter]
-      subject { @cmd.run(parameter) }
 
-      it { should be_a Array }
-      it { should == expected_result }
+      before(:all) do
+        @cmd = Atelier::Command.new(:cmd_name)
+        @cmd.action { |*args| args }
+      end
+
+      context 'if NO arguments parsing is configured' do
+        subject { @cmd.run(parameter) }
+
+        it { should be_a Array }
+        it { should == expected_result }
+      end
 
       context 'if arguments parsing is configured' do
         before(:all) do
           argument_parser = Atelier::ArgumentParser.new
           argument_parser.param(:first_arg)
-          @cmd = Atelier::Command.new(:cmd_name, argument_parser: argument_parser) do |c|
-            c.action { |args| args }
-          end
+          @cmd = Atelier::Command.new(:cmd_name, argument_parser: argument_parser)
+          @cmd.action { |args| args }
         end
-        subject { @cmd }
 
-        argument = :param
-        subject { @cmd.run(*[parameter, :ignored]) }
+        it 'should receive parse_arguments' do
+          params = ['arg1', 'arg2']
+          @cmd.stub(:parse_arguments)
+          @cmd.should_receive(:parse_arguments).with(params)
+          @cmd.run(*params)
+        end
 
-        its([:first_arg]) { should == argument }
+        describe 'parsed arguments' do
+          subject { @cmd.run(*[parameter, :ignored]) }
+
+          its([:first_arg]) { should == parameter }
+        end
       end
 
     end
