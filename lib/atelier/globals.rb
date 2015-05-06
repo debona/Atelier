@@ -8,7 +8,6 @@ module Atelier
   module Globals
 
     def application
-      puts 'Globals#application'
       Atelier::Application.instance
     end
 
