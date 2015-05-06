@@ -4,6 +4,14 @@ module Atelier
 
   module CommandDSL
 
+    def option(name, *opt_parser_args)
+      @options ||= {}
+      @option_parser ||= OptionParser.new
+      @option_parser.on(*opt_parser_args) do |o|
+        @options[name] = o
+      end
+    end
+
     def param(param_name)
       @argument_parser ||= ArgumentParser.new
       @argument_parser.param(param_name)

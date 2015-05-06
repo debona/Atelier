@@ -9,7 +9,7 @@ describe Atelier::CommandDSL do
   class CmdClass
     include Atelier::CommandDSL
 
-    attr_accessor :commands, :argument_parser
+    attr_accessor :commands, :argument_parser, :option_parser
 
   end
 
@@ -26,6 +26,20 @@ describe Atelier::CommandDSL do
     it 'should delegate the arguments parsing description' do
       subject.argument_parser.should_receive(:param).with(:param_name)
       subject.param(:param_name)
+    end
+  end
+
+  describe '#option' do
+    before(:all) do
+      @command = CmdClass.new
+      @command.option_parser = Object.new
+    end
+    subject { @command }
+
+    it 'should delegate the options parsing description' do
+      opt_parser_args = [:a, :b, :c]
+      subject.option_parser.should_receive(:on).with(*opt_parser_args)
+      subject.option(:option_name, *opt_parser_args)
     end
   end
 
