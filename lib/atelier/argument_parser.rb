@@ -1,8 +1,7 @@
-require 'ostruct'
 
 module Atelier
 
-  class ArgumentsParser
+  class ArgumentParser
 
     def initialize
       @arguments_range = {}
@@ -24,14 +23,15 @@ module Atelier
       @arguments_range[name] = 0..-1
     end
 
-    def parse(*parameters)
+    def parse(args)
+      parameters = args.dup
       parsed = {}
 
       @arguments_range.each do |name, arity|
         parsed[name] = parameters.slice!(arity)
       end
 
-      OpenStruct.new(parsed)
+      parsed
     end
 
   end

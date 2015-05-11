@@ -2,53 +2,60 @@ require 'spec_helper'
 
 require 'atelier/globals'
 
-describe :Globals do
+describe Atelier::Globals do
 
   class GlobalClass
     include Atelier::Globals
   end
 
-  before(:all) do
-    @global = GlobalClass.new
-    @app = Atelier::Application.instance
+  describe '.application' do
+    before(:all) do
+      @global = GlobalClass.new
+    end
+
+    subject { @global }
+
+    it 'should return every time the same application' do
+      subject.application.should == subject.application
+    end
   end
 
   describe '.command' do
 
+    before(:all) do
+      @global = GlobalClass.new
+      @app = Atelier::Application.send(:new)
+    end
+
+    let(:root_command) { nil }
+    let(:loading_command) { nil }
+
+    before do
+      @global.stub(:application) { @app }
+      @global.application.logger.stub(:warn) { nil }
+      @global.application.instance_eval { @root_command = root_command }
+      @global.application.stub(:loading_command) { loading_command }
+    end
+
     context 'when NO other command is loading' do
       it 'should redirect to the app load_root_command method' do
-        @app.should_receive(:load_root_command).with(:name, {})
+        @global.application.should_receive(:load_root_command).with(:name, {}).and_call_original
         @global.command(:name, {}) {}
       end
 
       it 'should trigger the app run method' do
-        @app.should_receive(:run).with(*ARGV)
+        @global.application.should_receive(:run).with(*ARGV)
         @global.command(:name, {}) {}
-      end
-
-      context 'when root_command is already defined' do
-        it 'should log a warning' do
-          @global.command(:previous, {}) {}
-          @app.logger.should_receive(:warn)
-          @global.command(:name, {}) {}
-        end
-
-        it 'should override the root command' do
-          @global.command(:previous, {}) {}
-          @global.command(:override, {}) {}
-          @app.root_command.name.should == :override
-        end
       end
     end
 
     context 'when another command is loading' do
+      let(:root_command) { Atelier::Command.new(:root) }
+      let(:loading_command) { Atelier::Command.new(:loading) }
+
       it 'should forward the command call on the loading command' do
-        @global.command(:root, {}) do |root|
-          @global.command(:loading, {}) do |loading|
-            loading.should_receive(:command).with(:new_cmd, {})
-            @global.command(:new_cmd, {}) {}
-          end
-        end
+        @global.application.loading_command.should_receive(:command).with(:new_cmd, {})
+        @global.command(:new_cmd, {}) {}
       end
     end
 

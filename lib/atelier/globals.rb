@@ -7,16 +7,18 @@ module Atelier
 
   module Globals
 
+    def application
+      Atelier::Application.instance
+    end
+
     def command(cmd_name, options = {}, &block)
-      app = Atelier::Application.instance
-      loading_command = app.loading_command
+      loading_command = application.loading_command
 
       if loading_command
         loading_command.command(cmd_name, options, &block)
       else
-        app.logger.warn "The root_command '#{app.root_command.name}' is overridden by '#{cmd_name}'" if app.root_command
-        app.load_root_command(cmd_name, options, &block)
-        app.run(*ARGV)
+        application.load_root_command(cmd_name, options, &block)
+        application.run(*ARGV)
       end
     end
 
