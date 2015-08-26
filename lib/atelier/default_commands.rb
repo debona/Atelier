@@ -33,8 +33,17 @@ module Atelier
           cmd = @help.super_command
 
           puts "#{cmd.name}: #{cmd.title}"
+
           puts "#{cmd.description}"
-          puts ''
+
+          switches = cmd.option_parser.top.list # give the list of the custom switches
+          unless switches.empty?
+            puts 'Options:'
+            switches.each do |switch|
+              longs_n_shorts = switch.long + switch.short
+              puts "\t#{longs_n_shorts.join(', ')}\n\t\t#{switch.desc.join("\n\t\t")}"
+            end
+          end
 
           puts 'Default commands:'
           cmd.commands.select.each do |command_name, command|
