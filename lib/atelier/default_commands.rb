@@ -67,7 +67,7 @@ module Atelier
         @completion.action do |*args|
           cmd = @completion.super_command
 
-          executable_name = File.basename(ARGV[0] || '')
+          executable_name = File.basename($PROGRAM_NAME)
 
           puts <<-EOS
             function __atelier_completion() {
@@ -92,17 +92,18 @@ module Atelier
         @complete.action do |*args|
           cmd = @complete.super_command
 
-          if args.size <= 1
+          current = args.last || ''
+
+          if args.first && cmd.commands.key?(args.first.to_sym)
+            sub_command = args.shift.to_sym
+            cmd.run(sub_command, :complete, *args) if cmd.commands[sub_command].commands.key?(:complete)
+          else
+            pattern = /^#{Regexp.escape(current)}/
             possibilities  = []
-            possibilities += Dir['*']
-            possibilities += Dir['.*']
+            possibilities += Dir[current + '*']
             possibilities -= ['.', '..']
-            possibilities += cmd.commands.keys
-            pattern = /^#{Regexp.escape(args.first || '')}/
-            puts possibilities.grep(pattern).join("\n")
-          elsif cmd.commands.key?(args.first.to_sym)
-            sub_command = args.first.to_sym
-            cmd.run(sub_command, :complete, *args[1..-1]) if cmd.commands[sub_command].commands.key?(:complete)
+            possibilities += cmd.commands.keys.grep(pattern) if args.size <= 1 # because the command can only be in first place
+            puts possibilities.join("\n")
           end
         end
       end

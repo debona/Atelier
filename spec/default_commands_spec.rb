@@ -93,7 +93,6 @@ describe 'default command' do
 
     # full_completion_list files
     files  = Dir['*']
-    files += Dir['.*']
     files -= ['.', '..']
 
     # full_completion_list sub-commands
@@ -119,10 +118,20 @@ describe 'default command' do
       it { should match_array (files + default_commands + commands).grep(/^com/) }
     end
 
-    context 'with a sub sub command' do
-      let(:parameters) { ['sub_command', ''] }
+    context 'with several parameters' do
 
-      it { should match_array files + default_commands + ['sub_sub_command'] }
+      context 'begining with NOT a sub command' do
+        let(:parameters) { ['not_sub_command', ''] }
+
+        it { should match_array files }
+      end
+
+      context 'begining with a sub command' do
+        it 'should forward the completion to the matching sub command' do
+          @cmd.commands[:sub_command].should_receive(:run).with(:complete, '')
+          @cmd.run(:complete, 'sub_command', '')
+        end
+      end
     end
   end
 
