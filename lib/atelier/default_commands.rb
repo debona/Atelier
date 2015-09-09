@@ -36,7 +36,7 @@ module Atelier
 
           puts "#{cmd.description}"
 
-          switches = cmd.option_parser.top.list # give the list of the custom switches
+          switches = cmd.available_switches # give the list of the custom switches
           unless switches.empty?
             puts 'Options:'
             switches.each do |switch|

@@ -223,4 +223,35 @@ describe Atelier::Command do
     it { should include :completion }
   end
 
+
+  describe '#available_switches' do
+    before(:all) do
+      @cmd = Atelier::Command.new(:cmd_name) do |cmd_name|
+        cmd_name.option(:alert, '-a', '--alert ALERT', 'Alert')
+      end
+    end
+    subject { @cmd.available_switches }
+
+    its(:size) { should == 1 }
+
+    describe 'the defined switch' do
+      subject { @cmd.available_switches.first }
+
+      its(:short) { should match_array ['-a'] }
+      its(:long)  { should match_array ['--alert'] }
+    end
+  end
+
+
+  describe '#available_switche_names' do
+    before(:all) do
+      @cmd = Atelier::Command.new(:cmd_name) do |cmd_name|
+        cmd_name.option(:alert, '-a', '--alert ALERT', 'Alert')
+      end
+    end
+    subject { @cmd.available_switche_names }
+
+    it { should match_array ['-a', '--alert'] }
+  end
+
 end
