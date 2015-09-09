@@ -92,19 +92,23 @@ module Atelier
         @complete.action do |*args|
           cmd = @complete.super_command
 
-          current = args.last || ''
-
           if args.first && cmd.commands.key?(args.first.to_sym)
             sub_command = args.shift.to_sym
             cmd.run(sub_command, :complete, *args) if cmd.commands[sub_command].commands.key?(:complete)
-          else
-            pattern = /^#{Regexp.escape(current)}/
-            possibilities  = []
-            possibilities += Dir[current + '*']
-            possibilities -= ['.', '..']
-            possibilities += cmd.commands.keys.grep(pattern) if args.size <= 1 # because the command can only be in first place
-            puts possibilities.join("\n")
+            next # leave from the action block; `return` would leave the currently executed method
           end
+
+          current = args.last || ''
+          possibilities  = []
+
+          current_pattern = /^#{Regexp.escape(current)}/
+
+          possibilities += Dir[current + '*']
+          possibilities -= ['.', '..']
+          possibilities += cmd.commands.keys.grep(current_pattern) if args.size <= 1 # because the command can only be in first place
+          possibilities += cmd.available_switche_names.grep(current_pattern)
+
+          puts possibilities.join("\n")
         end
       end
       @complete
