@@ -75,7 +75,11 @@ module Atelier
     private
 
     def parse_options!(parameters)
-      @option_parser.parse(parameters)
+      if !available_switches.empty?
+        @option_parser.parse(parameters)
+      else
+        parameters
+      end
     end
 
     def parse_arguments(*parameters)

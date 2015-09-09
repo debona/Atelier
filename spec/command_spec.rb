@@ -52,41 +52,55 @@ describe Atelier::Command do
   end
 
   describe '#parse_options!' do
-    switch_name = '--first'
-    option_name = :first
 
-    before(:all) do
-      @cmd = Atelier::Command.new(:cmd_name)
-      @cmd.option(option_name, "#{switch_name} VALUE")
-      @cmd
-    end
+    describe 'with declared options' do
+      switch_name = '--first'
+      option_name = :first
 
-    it 'should forward the message to option_parser' do
-      params = ['arg1', 'arg2']
-      @cmd.option_parser.should_receive(:parse).with(params)
-      @cmd.send(:parse_options!, params)
-    end
+      before(:all) do
+        @cmd = Atelier::Command.new(:cmd_name)
+        @cmd.option(option_name, "#{switch_name} VALUE")
+        @cmd
+      end
 
-    context 'when parsing declared options' do
-      expected_value = 'expected_value'
+      it 'should forward the message to option_parser' do
+        params = ['arg1', 'arg2']
+        @cmd.option_parser.should_receive(:parse).with(params)
+        @cmd.send(:parse_options!, params)
+      end
 
-      subject { @cmd.send(:parse_options!, ['arg1', switch_name, expected_value, 'arg2']) }
+      context 'when parsing declared options' do
+        expected_value = 'expected_value'
 
-      it { should match_array ['arg1', 'arg2'] }
+        subject { @cmd.send(:parse_options!, ['arg1', switch_name, expected_value, 'arg2']) }
 
-      describe 'its options' do
-        subject { @cmd.options }
+        it { should match_array ['arg1', 'arg2'] }
 
-        it { should be_a Hash }
-        its([option_name]) { should == expected_value }
+        describe 'its options' do
+          subject { @cmd.options }
+
+          it { should be_a Hash }
+          its([option_name]) { should == expected_value }
+        end
+      end
+
+      context 'when parsing undeclared options' do
+        subject { @cmd }
+
+        it 'should raise ' do
+          expect { subject.send(:parse_options!, ['arg1', '--undeclared', 'arg2']) }.to raise_error(OptionParser::InvalidOption)
+        end
       end
     end
 
-    context 'when parsing undeclared options' do
-      subject { @cmd }
+    describe 'without declared options' do
+      expected_parameters = [:first_param, '--invalid-option']
 
-      it 'should raise ' do
-        expect { subject.send(:parse_options!, ['arg1', '--undeclared', 'arg2']) }.to raise_error(OptionParser::InvalidOption)
+      before(:all) { @cmd = Atelier::Command.new(:cmd_name) }
+      subject { @cmd.send(:parse_options!, expected_parameters) }
+
+      it 'should not raise InvalidOption' do
+        subject.should == expected_parameters
       end
     end
   end
