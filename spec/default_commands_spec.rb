@@ -75,7 +75,8 @@ describe 'default command' do
   describe 'complete' do
     before(:all) do
       @cmd = Atelier::Command.new(:cmd_name) do |c|
-        c.option(:option, '-o', '--option OPT', 'test purpose option')
+        c.option(:option, '-o', '--option OPT', 'test purpose option') { ["value1", "value2"] }
+        c.option(:option, '-a', '--alert ALERT', 'test purpose option')
         c.command :sub_command do |s|
           s.command :sub_sub_command do
           end
@@ -99,7 +100,7 @@ describe 'default command' do
     # full_completion_list sub-commands
     default_commands = ['commands', 'help', 'completion', 'complete' ]
     commands = ['sub_command']
-    options = ['-o', '--option']
+    options = ['-o', '--option', '-a', '--alert']
 
     context 'without any parameters' do
       let(:parameters) { [] }
@@ -127,6 +128,18 @@ describe 'default command' do
     end
 
     context 'with several parameters' do
+
+      context 'begining with an option with a completion block' do
+        let(:parameters) { ['--option', ''] }
+
+        it { should match_array ["value1", "value2"] }
+      end
+
+      context 'begining with an option without completion block' do
+        let(:parameters) { ['--alert', ''] }
+
+        it { should match_array files + options }
+      end
 
       context 'begining with NOT a sub command' do
         let(:parameters) { ['not_sub_command', ''] }

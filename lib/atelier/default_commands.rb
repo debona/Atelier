@@ -99,14 +99,18 @@ module Atelier
           end
 
           current = args.last || ''
+          current_pattern = /^#{Regexp.escape(current)}/
+          before = args[-2]
           possibilities  = []
 
-          current_pattern = /^#{Regexp.escape(current)}/
-
-          possibilities += Dir[current + '*']
-          possibilities -= ['.', '..']
-          possibilities += cmd.commands.keys.grep(current_pattern) if args.size <= 1 # because the command can only be in first place
-          possibilities += cmd.available_switche_names.grep(current_pattern)
+          if matching_option_completion = cmd.options_completions[before]
+            possibilities += matching_option_completion.call().grep(current_pattern)
+          else
+            possibilities += Dir[current + '*']
+            possibilities -= ['.', '..']
+            possibilities += cmd.commands.keys.grep(current_pattern) if args.size <= 1 # because the command can only be in first place
+            possibilities += cmd.available_switche_names.grep(current_pattern)
+          end
 
           puts possibilities.join("\n")
         end

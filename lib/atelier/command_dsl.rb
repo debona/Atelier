@@ -4,12 +4,21 @@ module Atelier
 
   module CommandDSL
 
-    def option(name, *opt_parser_args)
+    def option(name, *opt_parser_args, &completion_block)
       @options ||= {}
+      @options_completions ||= {}
       @option_parser ||= OptionParser.new
+
+      switches_before = Array.new(@option_parser.top.list)
       @option_parser.on(*opt_parser_args) do |o|
         @options[name] = o
       end
+      return unless block_given?
+
+      new_switch = (@option_parser.top.list - switches_before).first
+
+      longs_and_shorts = (new_switch.long + new_switch.short).flatten
+      longs_and_shorts.each { |name| @options_completions[name] = completion_block }
     end
 
     def param(param_name)

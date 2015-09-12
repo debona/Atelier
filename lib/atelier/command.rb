@@ -9,7 +9,7 @@ module Atelier
 
     include CommandDSL
 
-    attr_reader :name, :commands, :options, :argument_parser
+    attr_reader :name, :commands, :options, :argument_parser, :options_completions
     attr_accessor :title, :description, :super_command, :option_parser
 
     def initialize(name, options = {}, &block)
@@ -26,6 +26,7 @@ module Atelier
       @argument_parser = options[:argument_parser]
 
       @option_parser   = options[:option_parser] || OptionParser.new
+      @options_completions = {}
       @options = {}
 
       @loading = block_given?
