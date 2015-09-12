@@ -36,7 +36,7 @@ module Atelier
 
           puts "#{cmd.description}"
 
-          switches = cmd.option_parser.top.list # give the list of the custom switches
+          switches = cmd.available_switches # give the list of the custom switches
           unless switches.empty?
             puts 'Options:'
             switches.each do |switch|
@@ -67,7 +67,7 @@ module Atelier
         @completion.action do |*args|
           cmd = @completion.super_command
 
-          executable_name = File.basename(ARGV[0] || '')
+          executable_name = File.basename($PROGRAM_NAME)
 
           puts <<-EOS
             function __atelier_completion() {
@@ -92,18 +92,27 @@ module Atelier
         @complete.action do |*args|
           cmd = @complete.super_command
 
-          if args.size <= 1
-            possibilities  = []
-            possibilities += Dir['*']
-            possibilities += Dir['.*']
-            possibilities -= ['.', '..']
-            possibilities += cmd.commands.keys
-            pattern = /^#{Regexp.escape(args.first || '')}/
-            puts possibilities.grep(pattern).join("\n")
-          elsif cmd.commands.key?(args.first.to_sym)
-            sub_command = args.first.to_sym
-            cmd.run(sub_command, :complete, *args[1..-1]) if cmd.commands[sub_command].commands.key?(:complete)
+          if args.first && cmd.commands.key?(args.first.to_sym)
+            sub_command = args.shift.to_sym
+            cmd.run(sub_command, :complete, *args) if cmd.commands[sub_command].commands.key?(:complete)
+            next # leave from the action block; `return` would leave the currently executed method
           end
+
+          current = args.last || ''
+          current_pattern = /^#{Regexp.escape(current)}/
+          before = args[-2]
+          possibilities  = []
+
+          if matching_option_completion = cmd.options_completions[before]
+            possibilities += matching_option_completion.call().grep(current_pattern)
+          else
+            possibilities += Dir[current + '*']
+            possibilities -= ['.', '..']
+            possibilities += cmd.commands.keys.grep(current_pattern) if args.size <= 1 # because the command can only be in first place
+            possibilities += cmd.available_switche_names.grep(current_pattern)
+          end
+
+          puts possibilities.join("\n")
         end
       end
       @complete

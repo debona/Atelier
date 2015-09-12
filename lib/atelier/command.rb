@@ -9,7 +9,7 @@ module Atelier
 
     include CommandDSL
 
-    attr_reader :name, :commands, :options, :argument_parser
+    attr_reader :name, :commands, :options, :argument_parser, :options_completions
     attr_accessor :title, :description, :super_command, :option_parser
 
     def initialize(name, options = {}, &block)
@@ -26,6 +26,7 @@ module Atelier
       @argument_parser = options[:argument_parser]
 
       @option_parser   = options[:option_parser] || OptionParser.new
+      @options_completions = {}
       @options = {}
 
       @loading = block_given?
@@ -62,10 +63,24 @@ module Atelier
       end
     end
 
+    def available_switches
+      switches = @option_parser.top.list # give the list of the custom switches
+      Array.new(switches)
+    end
+
+    def available_switche_names
+      names = available_switches.collect { |switch| [switch.long, switch.short] }
+      names.flatten
+    end
+
     private
 
     def parse_options!(parameters)
-      @option_parser.parse(parameters)
+      if !available_switches.empty?
+        @option_parser.parse(parameters)
+      else
+        parameters
+      end
     end
 
     def parse_arguments(*parameters)

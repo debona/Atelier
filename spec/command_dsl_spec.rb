@@ -3,13 +3,14 @@ require 'spec_helper'
 require 'atelier/application'
 require 'atelier/command_dsl'
 
+require 'optparse'
 
 describe Atelier::CommandDSL do
 
   class CmdClass
     include Atelier::CommandDSL
 
-    attr_accessor :commands, :argument_parser, :option_parser
+    attr_accessor :commands, :argument_parser, :option_parser, :options_completions
 
   end
 
@@ -32,14 +33,36 @@ describe Atelier::CommandDSL do
   describe '#option' do
     before(:all) do
       @command = CmdClass.new
-      @command.option_parser = Object.new
+      @command.option_parser = OptionParser.new
     end
+
     subject { @command }
 
     it 'should delegate the options parsing description' do
       opt_parser_args = [:a, :b, :c]
       subject.option_parser.should_receive(:on).with(*opt_parser_args)
       subject.option(:option_name, *opt_parser_args)
+    end
+
+    context 'with a completion block' do
+      expected_proc = Proc.new { :very_expected_proc }
+      switches = ['-a', '-b', '--long-a', '--long-b']
+
+      before do
+        @command = CmdClass.new
+        @command.option_parser = OptionParser.new
+        @command.option(:option_name, *switches, &expected_proc)
+      end
+
+      describe 'its options_completions' do
+        subject { @command.options_completions }
+
+        it { should be_a Hash }
+
+        switches.each do |switch|
+          its([switch]) { should == expected_proc }
+        end
+      end
     end
   end
 

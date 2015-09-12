@@ -75,6 +75,8 @@ describe 'default command' do
   describe 'complete' do
     before(:all) do
       @cmd = Atelier::Command.new(:cmd_name) do |c|
+        c.option(:option, '-o', '--option OPT', 'test purpose option') { ["value1", "value2"] }
+        c.option(:option, '-a', '--alert ALERT', 'test purpose option')
         c.command :sub_command do |s|
           s.command :sub_sub_command do
           end
@@ -93,17 +95,17 @@ describe 'default command' do
 
     # full_completion_list files
     files  = Dir['*']
-    files += Dir['.*']
     files -= ['.', '..']
 
     # full_completion_list sub-commands
     default_commands = ['commands', 'help', 'completion', 'complete' ]
     commands = ['sub_command']
+    options = ['-o', '--option', '-a', '--alert']
 
     context 'without any parameters' do
       let(:parameters) { [] }
 
-      it { should match_array files + default_commands + commands }
+      it { should match_array files + default_commands + commands + options }
     end
 
     context 'with a file' do
@@ -113,16 +115,44 @@ describe 'default command' do
       it { should match_array [expected_file] }
     end
 
+    context 'with an option' do
+      let(:parameters) { ['--op'] }
+
+      it { should match_array ['--option'] }
+    end
+
     context 'with a sub command' do
       let(:parameters) { ['com'] }
 
       it { should match_array (files + default_commands + commands).grep(/^com/) }
     end
 
-    context 'with a sub sub command' do
-      let(:parameters) { ['sub_command', ''] }
+    context 'with several parameters' do
 
-      it { should match_array files + default_commands + ['sub_sub_command'] }
+      context 'begining with an option with a completion block' do
+        let(:parameters) { ['--option', ''] }
+
+        it { should match_array ["value1", "value2"] }
+      end
+
+      context 'begining with an option without completion block' do
+        let(:parameters) { ['--alert', ''] }
+
+        it { should match_array files + options }
+      end
+
+      context 'begining with NOT a sub command' do
+        let(:parameters) { ['not_sub_command', ''] }
+
+        it { should match_array files + options }
+      end
+
+      context 'begining with a sub command' do
+        it 'should forward the completion to the matching sub command' do
+          @cmd.commands[:sub_command].should_receive(:run).with(:complete, '')
+          @cmd.run(:complete, 'sub_command', '')
+        end
+      end
     end
   end
 
