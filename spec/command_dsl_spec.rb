@@ -25,8 +25,8 @@ describe Atelier::CommandDSL do
     subject { @command }
 
     it 'should delegate the arguments parsing description' do
-      subject.argument_parser.should_receive(:param).with(:param_name)
-      subject.param(:param_name)
+      subject.argument_parser.should_receive(:param).with(:param_name, 'desc')
+      subject.param(:param_name, 'desc')
     end
   end
 
@@ -74,8 +74,8 @@ describe Atelier::CommandDSL do
     subject { @command }
 
     it 'should delegate the arguments parsing description' do
-      subject.argument_parser.should_receive(:params).with(:param_name)
-      subject.params(:param_name)
+      subject.argument_parser.should_receive(:params).with(:param_name, 'desc')
+      subject.params(:param_name, 'desc')
     end
   end
 

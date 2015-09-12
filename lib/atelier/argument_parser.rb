@@ -3,15 +3,19 @@ module Atelier
 
   class ArgumentParser
 
+    attr_reader :arguments_descs
+
     def initialize
       @arguments_range = {}
+      @arguments_descs = {}
     end
 
     def arguments
       @arguments_range.keys
     end
 
-    def param(name)
+    def param(name, desc = '')
+      @arguments_descs[name] = desc
       @arguments_range[name] = 0
 
       @arguments_range.each do |name, arity|
@@ -19,7 +23,8 @@ module Atelier
       end
     end
 
-    def params(name)
+    def params(name, desc = '')
+      @arguments_descs[name] = desc
       @arguments_range[name] = 0..-1
     end
 

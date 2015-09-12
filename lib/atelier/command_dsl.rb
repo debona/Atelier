@@ -21,14 +21,14 @@ module Atelier
       longs_and_shorts.each { |name| @options_completions[name] = completion_block }
     end
 
-    def param(param_name)
+    def param(param_name, param_desc = '')
       @argument_parser ||= ArgumentParser.new
-      @argument_parser.param(param_name)
+      @argument_parser.param(param_name, param_desc)
     end
 
-    def params(params_name)
+    def params(params_name, params_desc = '')
       @argument_parser ||= ArgumentParser.new
-      @argument_parser.params(params_name)
+      @argument_parser.params(params_name, params_desc)
     end
 
     def action(&block)
