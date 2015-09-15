@@ -3,7 +3,7 @@ module Atelier
 
   class ArgumentParser
 
-    attr_reader :arguments_descs
+    attr_reader :arguments_range, :arguments_descs
 
     def initialize
       @arguments_range = {}

@@ -73,6 +73,13 @@ module Atelier
       names.flatten
     end
 
+    def arguments
+      return {} unless @argument_parser
+      return @argument_parser.arguments unless block_given?
+
+      @argument_parser.arguments_range.each { |name, range| yield(name, range != 0, @argument_parser.arguments_descs[name]) }
+    end
+
     private
 
     def parse_options!(parameters)

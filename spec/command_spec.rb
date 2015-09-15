@@ -121,6 +121,24 @@ describe Atelier::Command do
     end
   end
 
+  describe '#arguments' do
+    before(:all) do
+      argument_parser = Atelier::ArgumentParser.new
+      argument_parser.param(:first_arg, 'first_desc')
+      argument_parser.params(:other_args, 'other_descs')
+      @cmd = Atelier::Command.new(:cmd_name, argument_parser: argument_parser)
+    end
+
+    subject { @cmd }
+
+    it 'should yield with arguments info' do
+      expect { |b| subject.arguments(&b) }.to yield_successive_args(
+        [:first_arg, false, 'first_desc'],
+        [:other_args, true, 'other_descs']
+      )
+    end
+  end
+
   describe '#run' do
     before(:all) do
       @cmd = Atelier::Command.new(:cmd_name)
