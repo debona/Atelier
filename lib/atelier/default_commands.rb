@@ -33,11 +33,23 @@ module Atelier
           cmd = @help.super_command
 
           puts "#{cmd.name}: #{cmd.title}"
+          puts ''
+          puts cmd.description
 
-          puts "#{cmd.description}"
+          args = []
+          cmd.arguments { |name, multiple| args << "<#{name}>#{multiple ? '*' : ''}" }
+          puts ''
+          puts "Usage : #{cmd.name} #{args.join(" ")}"
+
+          unless args.empty?
+            puts ''
+            puts "Arguments:"
+            cmd.arguments { |name, multiple, desc| puts "\t<#{name}>#{multiple ? '*' : ''}\n\t\t#{desc}" }
+          end
 
           switches = cmd.available_switches # give the list of the custom switches
           unless switches.empty?
+            puts ''
             puts 'Options:'
             switches.each do |switch|
               longs_n_shorts = switch.long + switch.short
@@ -45,11 +57,13 @@ module Atelier
             end
           end
 
+          puts ''
           puts 'Default commands:'
           cmd.commands.select.each do |command_name, command|
             puts "  - #{cmd.name} #{command_name}" if command.default?
           end
 
+          puts ''
           puts 'Commands:'
           cmd.commands.each do |command_name, command|
             puts "  - #{cmd.name} #{command_name}" unless command.default?

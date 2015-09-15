@@ -33,13 +33,15 @@ describe 'default command' do
     expected_title       = 'This is a dummy test command'
     expected_opt_switch  = '--an_option'
     expected_opt_desc    = 'An option'
+    expected_arg         = 'arg_one'
+    expected_arg_desc    = 'It is the first arg'
 
     before(:all) do
       @cmd = Atelier::Command.new(:cmd_name) do |c|
         c.title = expected_title
-        c.option :an_option, expected_opt_switch, expected_opt_desc
-        c.command :sub_command do
-        end
+        c.option(:an_option, expected_opt_switch, expected_opt_desc)
+        c.param(expected_arg, expected_arg_desc)
+        c.command(:sub_command) {}
       end
     end
 
@@ -53,6 +55,11 @@ describe 'default command' do
     describe 'command description' do
       it { should match 'cmd_name' }
       it { should match expected_title }
+    end
+
+    describe 'arguments' do
+      it { should match expected_arg }
+      it { should match expected_arg_desc }
     end
 
     describe 'options' do
