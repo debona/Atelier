@@ -24,8 +24,8 @@ describe Atelier::CommandDSL do
     end
     subject { @command }
 
-    it 'should delegate the arguments parsing description' do
-      subject.argument_parser.should_receive(:param).with(:param_name)
+    it 'delegates the arguments parsing description' do
+      expect(subject.argument_parser).to receive(:param).with(:param_name)
       subject.param(:param_name)
     end
   end
@@ -38,9 +38,9 @@ describe Atelier::CommandDSL do
 
     subject { @command }
 
-    it 'should delegate the options parsing description' do
+    it 'delegates the options parsing description' do
       opt_parser_args = [:a, :b, :c]
-      subject.option_parser.should_receive(:on).with(*opt_parser_args)
+      expect(subject.option_parser).to receive(:on).with(*opt_parser_args)
       subject.option(:option_name, *opt_parser_args)
     end
 
@@ -57,10 +57,10 @@ describe Atelier::CommandDSL do
       describe 'its options_completions' do
         subject { @command.options_completions }
 
-        it { should be_a Hash }
+        it { is_expected.to be_a Hash }
 
         switches.each do |switch|
-          its([switch]) { should == expected_proc }
+          its([switch]) { is_expected.to eq expected_proc }
         end
       end
     end
@@ -73,8 +73,8 @@ describe Atelier::CommandDSL do
     end
     subject { @command }
 
-    it 'should delegate the arguments parsing description' do
-      subject.argument_parser.should_receive(:params).with(:param_name)
+    it 'delegates the arguments parsing description' do
+      expect(subject.argument_parser).to receive(:params).with(:param_name)
       subject.params(:param_name)
     end
   end
@@ -87,14 +87,14 @@ describe Atelier::CommandDSL do
     end
     subject { @command }
 
-    its(:action) { should == expected_proc }
+    its(:action) { is_expected.to eq expected_proc }
   end
 
   describe '#command' do
     before(:all) { @command = CmdClass.new }
 
-    it 'should NOT trigger the app run method' do
-      Atelier::Application.instance.should_not_receive(:run)
+    it 'does NOT trigger the app run method' do
+      expect(Atelier::Application.instance).to_not receive(:run)
       @command.send(:command, :sub_cmd_name) {}
     end
 
@@ -103,11 +103,11 @@ describe Atelier::CommandDSL do
 
       subject { @command.commands[:sub_cmd_name] }
 
-      it { should be_a Atelier::Command }
+      it { is_expected.to be_a Atelier::Command }
 
-      its(:name)          { should == :sub_cmd_name }
-      it 'its super_command should equal the command' do
-        subject.super_command.should == @command
+      its(:name) { is_expected.to eq :sub_cmd_name }
+      it 'its super_command is_expected.to equal the command' do
+        expect(subject.super_command).to eq @command
       end
     end
 
@@ -121,8 +121,8 @@ describe Atelier::CommandDSL do
       @command.send(:load_command, cmd_path)
     end
 
-    it 'should properly load the command as a ruby file' do
-      TOPLEVEL_BINDING.eval('@loaded_properly').should be_true
+    it 'loads the command as a ruby file' do
+      expect(TOPLEVEL_BINDING.eval('@loaded_properly')).to eq true
     end
   end
 

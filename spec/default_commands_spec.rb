@@ -19,14 +19,14 @@ describe 'default command' do
 
     subject do
       printed = []
-      STDOUT.stub(:puts) { |output| printed << output.to_s.strip }
+      allow(STDOUT).to receive(:puts) { |output| printed << output.to_s.strip }
       @cmd.run(:commands)
       printed
     end
 
     sub_commands = ['sub_command']
 
-    it { should match_array default_commands + sub_commands }
+    it { is_expected.to match_array default_commands + sub_commands }
   end
 
   describe 'help' do
@@ -45,30 +45,30 @@ describe 'default command' do
 
     subject do
       printed = ''
-      STDOUT.stub(:puts) { |output| printed << output }
+      allow(STDOUT).to receive(:puts) { |output| printed << output }
       @cmd.run(:help)
       printed
     end
 
     describe 'command description' do
-      it { should match 'cmd_name' }
-      it { should match expected_title }
+      it { is_expected.to match 'cmd_name' }
+      it { is_expected.to match expected_title }
     end
 
     describe 'options' do
-      it { should match expected_opt_switch }
-      it { should match expected_opt_desc }
+      it { is_expected.to match expected_opt_switch }
+      it { is_expected.to match expected_opt_desc }
     end
 
     describe 'default commands' do
-      it { should match 'help' }
-      it { should match 'completion' }
-      it { should match 'complete' }
-      it { should match 'commands' }
+      it { is_expected.to match 'help' }
+      it { is_expected.to match 'completion' }
+      it { is_expected.to match 'complete' }
+      it { is_expected.to match 'commands' }
     end
 
     describe 'commands' do
-      it { should match 'sub_command' }
+      it { is_expected.to match 'sub_command' }
     end
   end
 
@@ -88,7 +88,7 @@ describe 'default command' do
 
     subject do
       printed = ''
-      STDOUT.stub(:puts) { |output| printed << output }
+      allow(STDOUT).to receive(:puts) { |output| printed << output }
       @cmd.run(:complete, *parameters)
       printed.lines.map(&:strip)
     end
@@ -105,26 +105,26 @@ describe 'default command' do
     context 'without any parameters' do
       let(:parameters) { [] }
 
-      it { should match_array files + default_commands + commands + options }
+      it { is_expected.to match_array files + default_commands + commands + options }
     end
 
     context 'with a file' do
       expected_file = Dir['*'].first
       let(:parameters) { [expected_file[0..-2]] }
 
-      it { should match_array [expected_file] }
+      it { is_expected.to match_array [expected_file] }
     end
 
     context 'with an option' do
       let(:parameters) { ['--op'] }
 
-      it { should match_array ['--option'] }
+      it { is_expected.to match_array ['--option'] }
     end
 
     context 'with a sub command' do
       let(:parameters) { ['com'] }
 
-      it { should match_array (files + default_commands + commands).grep(/^com/) }
+      it { is_expected.to match_array (files + default_commands + commands).grep(/^com/) }
     end
 
     context 'with several parameters' do
@@ -132,24 +132,24 @@ describe 'default command' do
       context 'begining with an option with a completion block' do
         let(:parameters) { ['--option', ''] }
 
-        it { should match_array ["value1", "value2"] }
+        it { is_expected.to match_array ["value1", "value2"] }
       end
 
       context 'begining with an option without completion block' do
         let(:parameters) { ['--alert', ''] }
 
-        it { should match_array files + options }
+        it { is_expected.to match_array files + options }
       end
 
       context 'begining with NOT a sub command' do
         let(:parameters) { ['not_sub_command', ''] }
 
-        it { should match_array files + options }
+        it { is_expected.to match_array files + options }
       end
 
       context 'begining with a sub command' do
-        it 'should forward the completion to the matching sub command' do
-          @cmd.commands[:sub_command].should_receive(:run).with(:complete, '')
+        it 'forwards the completion to the matching sub command' do
+          expect(@cmd.commands[:sub_command]).to receive(:run).with(:complete, '')
           @cmd.run(:complete, 'sub_command', '')
         end
       end
@@ -163,13 +163,13 @@ describe 'default command' do
 
     subject do
       printed = ''
-      STDOUT.stub(:puts) { |output| printed << output }
+      allow(STDOUT).to receive(:puts) { |output| printed << output }
       @cmd.run(:completion)
       printed
     end
 
-    it 'should output shellscript that enable the bash completion' do
-      subject.should match '^[ ]+complete '
+    it 'outputs shellscript that enable the bash completion' do
+      is_expected.to match '^[ ]+complete '
     end
   end
 

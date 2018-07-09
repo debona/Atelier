@@ -7,13 +7,13 @@ describe Atelier::ArgumentParser do
   describe '#param' do
     before { subject.param(:param_name) }
 
-    its(:arguments) { should include :param_name }
+    its(:arguments) { is_expected.to include :param_name }
   end
 
   describe '#params' do
     before { subject.params(:params_name) }
 
-    its(:arguments) { should include :params_name }
+    its(:arguments) { is_expected.to include :params_name }
   end
 
   describe '#parse' do
@@ -27,8 +27,8 @@ describe Atelier::ArgumentParser do
         argument_parser.param(:second_param)
       end
 
-      its([:first_param])  { should == :one }
-      its([:second_param]) { should == :two }
+      its([:first_param])  { is_expected.to eq :one }
+      its([:second_param]) { is_expected.to eq :two }
     end
 
     context 'for variable arguments' do
@@ -38,9 +38,9 @@ describe Atelier::ArgumentParser do
         argument_parser.param(:last_param)
       end
 
-      its([:first_param]) { should == :one }
-      its([:var_params])  { should == [:two, :three, :four] }
-      its([:last_param])  { should == :five }
+      its([:first_param]) { is_expected.to eq :one }
+      its([:var_params])  { is_expected.to eq [:two, :three, :four] }
+      its([:last_param])  { is_expected.to eq :five }
 
     end
   end

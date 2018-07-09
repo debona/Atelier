@@ -6,11 +6,11 @@ describe Atelier::Application do
   before(:all) do
     @app = Atelier::Application.instance
   end
-  before { @app.logger.stub(:warn) { nil } }
+  before { allow(@app.logger).to receive(:warn).and_return(nil) }
   subject { @app }
 
   describe '.instance' do
-    its(:logger) { should be_a Logger }
+    its(:logger) { is_expected.to be_a Logger }
   end
 
   describe '#load_root_command' do
@@ -19,18 +19,18 @@ describe Atelier::Application do
     before { @app.load_root_command(name) {} }
     subject { @app.root_command }
 
-    it { should be_a Atelier::Command }
-    its(:name) { should == name }
+    it { is_expected.to be_a Atelier::Command }
+    its(:name) { is_expected.to eq name }
 
     context 'when a root command is already defined' do
-      it 'should log a warning' do
-        @app.logger.should_receive(:warn)
+      it 'logs a warning' do
+        expect(@app.logger).to receive(:warn)
         @app.load_root_command(:another, {}) {}
       end
 
-      it 'should override the root command' do
+      it 'overrides the root command' do
         @app.load_root_command(:override, {}) {}
-        @app.root_command.name.should == :override
+        expect(@app.root_command.name).to eq :override
       end
     end
   end
@@ -39,20 +39,20 @@ describe Atelier::Application do
     subject { @app.loading_command }
 
     context 'while there is no loading command' do
-      it { should == nil }
+      it { is_expected.to eq nil }
     end
 
     context 'while the root command is loading' do
-      it 'should return the root command' do
-        @app.load_root_command(:root_command) { |r| subject.should == r }
+      it 'returns the root command' do
+        @app.load_root_command(:root_command) { |r| expect(subject).to eq r }
       end
     end
 
     context 'while commands are loading' do
-      it 'should return the sub command' do
+      it 'returns the sub command' do
         @app.load_root_command(:root_command) do |r|
           r.command(:command) do |c|
-            c.command(:another_command) { |a| subject.should == a }
+            c.command(:another_command) { |a| expect(subject).to eq a }
           end
         end
       end
@@ -63,21 +63,21 @@ describe Atelier::Application do
     context 'when root_command is defined' do
       subject { @app }
 
-      it 'should run the :sample_command on the root_command' do
+      it 'runs the :sample_command on the root_command' do
         root_command = Object.new
-        root_command.should_receive(:run).with(:sample_command)
-        subject.stub(:root_command) { root_command }
+        expect(root_command).to receive(:run).with(:sample_command)
+        expect(subject).to receive(:root_command).and_return(root_command)
 
         subject.run(:sample_command)
       end
 
-      it 'should log an error on exception' do
+      it 'logs an error on exception' do
         e = RuntimeError.new('an exception')
         root_command = Object.new
-        root_command.stub(:run) { raise e }
-        subject.stub(:root_command) { root_command }
+        expect(root_command).to receive(:run) { raise e }
+        expect(subject).to receive(:root_command).and_return(root_command)
 
-        subject.logger.should_receive(:error).with(e)
+        expect(subject.logger).to receive(:error).with(e)
         subject.run(:sample_command)
       end
     end
@@ -88,12 +88,12 @@ describe Atelier::Application do
 
     context 'with a file available from the $PATH' do
       let(:file_name) { :bash }
-      it { should == '/bin/bash' }
+      it { is_expected.to eq '/bin/bash' }
     end
 
     context 'with a file not available from the $PATH' do
       let(:file_name) { :qsgfqDs }
-      it { should be_nil }
+      it { is_expected.to be_nil }
     end
   end
 
