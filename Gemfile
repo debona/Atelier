@@ -8,5 +8,6 @@ end
 group :test do
   gem 'rspec'
   gem 'rspec-mocks'
+  gem 'rspec-its'
   gem 'coveralls', require: false
 end
