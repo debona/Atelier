@@ -44,7 +44,11 @@ describe Atelier::Globals do
       end
 
       it 'triggers the app run method' do
-        expect(@global.application).to receive(:run).with(*ARGV)
+        if ARGV.any?
+          expect(@global.application).to receive(:run).with(*ARGV)
+        else
+          expect(@global.application).to receive(:run).with(no_args)
+        end
         @global.command(:name, {}) {}
       end
     end
