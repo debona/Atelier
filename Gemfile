@@ -1,8 +1,11 @@
 source 'http://rubygems.org'
 
 group :development do
-  gem 'byebug'
   gem 'atelier', :path => '.'
+end
+
+group :development, :test do
+  gem 'byebug'
 end
 
 group :test do

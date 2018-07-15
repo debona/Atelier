@@ -1,6 +1,5 @@
 
 module Atelier
-
   class ArgumentParser
 
     def initialize
@@ -23,8 +22,8 @@ module Atelier
       @arguments_range[name] = 0..-1
     end
 
-    def parse(args)
-      parameters = args.dup
+    def parse(parameters)
+      parameters = parameters.dup
       parsed = {}
 
       @arguments_range.each do |name, arity|
@@ -33,7 +32,5 @@ module Atelier
 
       parsed
     end
-
   end
-
 end

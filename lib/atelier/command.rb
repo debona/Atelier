@@ -4,15 +4,13 @@ require 'atelier/argument_parser'
 require 'optparse'
 
 module Atelier
-
   class Command
-
     include CommandDSL
 
     attr_reader :name, :commands, :options, :argument_parser, :options_completions
     attr_accessor :title, :description, :super_command, :option_parser
 
-    def initialize(name, options = {}, &block)
+    def initialize(name, **options, &block)
       @name          = name
       @super_command = options[:super_command]
       @default       = options[:default]     || false
@@ -52,7 +50,7 @@ module Atelier
         cmd_name = parameters.shift.to_sym
         command = commands[cmd_name]
         command.super_command = self # useful for default commands
-        command.run(*parameters)
+        return command.run(*parameters)
       elsif @argument_parser
         parameters = parse_options!(parameters)
         arguments = parse_arguments(parameters)
@@ -86,7 +84,5 @@ module Atelier
     def parse_arguments(*parameters)
       @argument_parser.parse(*parameters)
     end
-
   end
-
 end

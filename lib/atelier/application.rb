@@ -4,9 +4,7 @@ require 'logger'
 require 'atelier/command'
 
 module Atelier
-
   class Application
-
     include Singleton
 
     attr_reader :root_command, :logger
@@ -29,7 +27,7 @@ module Atelier
       command
     end
 
-    def load_root_command(name, options = {}, &block)
+    def load_root_command(name, **options, &block)
       logger.warn "The root_command '#{root_command.name}' is overridden by '#{name}'" if root_command
       @root_command = Command.new(name, options)
       @root_command.load(&block)
