@@ -11,11 +11,13 @@ module Atelier
     end
 
     def command(name, **options, &block)
-      if application.root_command.nil?
+      root_command = application.root_command
+
+      if root_command.nil?
         application.load_root_command(name, options, &block)
         application.run(*ARGV)
-      elsif application.loading_command
-        application.loading_command.command(name, options, &block)
+      elsif root_command.loading_command
+        root_command.loading_command.command(name, options, &block)
       else
         raise "There already is a root command and there are no more loading commands."
       end

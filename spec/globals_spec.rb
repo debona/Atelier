@@ -25,13 +25,13 @@ describe Atelier::Globals do
         subject.command(:name, an_option: nil, &expected_block)
       end
 
-      it 'defines the application root_command' do
+      it 'loads the application root_command synchronously' do
         expect {
           subject.command(:name) {}
         }.to change { subject.application.root_command }.from(nil).to an_instance_of(Atelier::Command)
       end
 
-      it 'triggers the app run method' do
+      it 'calls the application run method' do
         if ARGV.any?
           expect(subject.application).to receive(:run).with(*ARGV)
         else
@@ -41,10 +41,12 @@ describe Atelier::Globals do
       end
     end
 
-    context 'when there is an application root_command and a loading command' do
-      it 'forwards the command call on the loading command' do
-        subject.command(:root_command) do
-          expect(subject.application.loading_command).to receive(:command).with(:new_cmd, {}, &expected_block)
+    context 'when the root_command is loading' do
+      it 'forwards the command call on the root_command loading command' do
+        subject.command(:root_command) do |root_command|
+          loading_command = double(:loading_command)
+          allow(root_command).to receive(:loading_command).and_return(loading_command)
+          expect(loading_command).to receive(:command).with(:new_cmd, {}, &expected_block)
           subject.command(:new_cmd, {}, &expected_block)
         end
       end
