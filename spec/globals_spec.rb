@@ -4,64 +4,50 @@ require 'atelier/globals'
 
 describe Atelier::Globals do
 
-  class GlobalClass
-    include Atelier::Globals
-  end
+  describe ".application" do
+    it { expect(subject.application).to be_a Atelier::Application }
 
-  describe '.application' do
-    before(:all) do
-      @global = GlobalClass.new
-    end
-
-    subject { @global }
-
-    it 'returns every time the same application' do
+    it "returns every time the same application" do
       expect(subject.application).to eq subject.application
     end
   end
 
   describe '.command' do
+    # Ensure the application is always clean
+    before { allow(subject).to receive(:application).and_return(Atelier::Application.new) }
 
-    before(:all) do
-      @global = GlobalClass.new
-      @app = Atelier::Application.send(:new)
-    end
+    let(:expected_block) { Proc.new {} }
 
-    let(:root_command) { nil }
-    let(:loading_command) { nil }
+    context 'when there is no application root_command yet' do
+      it 'loads the command as the root one' do
+        allow(subject.application).to receive(:run)
+        expect(subject.application).to receive(:load_root_command).with(:name, an_option: nil, &expected_block)
+        subject.command(:name, an_option: nil, &expected_block)
+      end
 
-    before do
-      allow(@global).to receive(:application) { @app }
-      allow(@global.application.logger).to receive(:warn) { nil }
-      @global.application.instance_eval { @root_command = root_command }
-      allow(@global.application).to receive(:loading_command).and_return(loading_command)
-    end
-
-    context 'when NO other command is loading' do
-      it 'redirects to the app load_root_command method' do
-        expect(@global.application).to receive(:load_root_command).with(:name, {}).and_call_original
-        @global.command(:name, {}) {}
+      it 'defines the application root_command' do
+        expect {
+          subject.command(:name) {}
+        }.to change { subject.application.root_command }.from(nil).to an_instance_of(Atelier::Command)
       end
 
       it 'triggers the app run method' do
         if ARGV.any?
-          expect(@global.application).to receive(:run).with(*ARGV)
+          expect(subject.application).to receive(:run).with(*ARGV)
         else
-          expect(@global.application).to receive(:run).with(no_args)
+          expect(subject.application).to receive(:run).with(no_args)
         end
-        @global.command(:name, {}) {}
+        subject.command(:name) {}
       end
     end
 
-    context 'when another command is loading' do
-      let(:root_command) { Atelier::Command.new(:root) }
-      let(:loading_command) { Atelier::Command.new(:loading) }
-
+    context 'when there is an application root_command and a loading command' do
       it 'forwards the command call on the loading command' do
-        expect(@global.application.loading_command).to receive(:command).with(:new_cmd, {})
-        @global.command(:new_cmd, {}) {}
+        subject.command(:root_command) do
+          expect(subject.application.loading_command).to receive(:command).with(:new_cmd, {}, &expected_block)
+          subject.command(:new_cmd, {}, &expected_block)
+        end
       end
     end
-
   end
 end

@@ -1,3 +1,3 @@
 require 'atelier/globals'
 
-include Atelier::Globals
+extend Atelier::Globals
