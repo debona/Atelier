@@ -31,12 +31,12 @@ module Atelier
     end
 
     def action(&block)
-      @action = block if block
+      @action = block if block_given?
       @action
     end
 
     def load_command(cmd_name)
-      cmd_path = Application.instance.locate_command cmd_name # FIXME stop depending on App singleton
+      cmd_path = application.locate_command cmd_name
       require(cmd_path) unless cmd_path.nil? || cmd_path.empty?
     end
 
