@@ -3,27 +3,35 @@ require 'spec_helper'
 require 'atelier/command'
 
 describe Atelier::Command do
+  subject { Atelier::Command.new(:cmd_name) }
 
   describe '#initialize' do
-    subject { Atelier::Command.new(:cmd_name) }
     its(:name) { is_expected.to eq :cmd_name }
+    its(:super_command) { is_expected.to eq nil }
+    its(:application) { is_expected.to eq nil }
+    its(:default?) { is_expected.to eq false }
+
+    its(:title) { is_expected.to eq nil }
+    its(:description) { is_expected.to eq nil }
+    its(:action) { is_expected.to eq nil }
 
     context 'with options' do
-      expected_options = {
-        default:       :something_true,
-        super_command: :expected_command,
-        title:         :expected_title,
-        description:   :expected_description,
-        commands:      { expected_commands: true },
-        action:        :expected_action
+      subject {
+        Atelier::Command.new(:cmd_name,
+          application:   :application,
+          super_command: :expected_command,
+          default:       :something_true,
+        )
       }
-      subject { Atelier::Command.new(:cmd_name, expected_options) }
 
+      its(:name) { is_expected.to eq :cmd_name }
+      its(:super_command) { is_expected.to eq :expected_command }
+      its(:application) { is_expected.to eq :application }
       its(:default?) { is_expected.to eq true }
 
-      [:super_command, :title, :description, :commands, :action].each do |option_name|
-        its(option_name) { is_expected.to eq expected_options[option_name] }
-      end
+      its(:title) { is_expected.to eq nil }
+      its(:description) { is_expected.to eq nil }
+      its(:action) { is_expected.to eq nil }
     end
 
     context 'with a block' do
@@ -31,17 +39,23 @@ describe Atelier::Command do
 
       it 'forwards the block to the load method' do
         allow_any_instance_of(Atelier::Command).to receive(:load) { |&block| expect(block).to eq expected_block }
-        c = Atelier::Command.new(:cmd_name, { default: true }, &expected_block)
+        # default options avoid to get several command instance created
+        # FIXME Will be useless when the default command has its proper class
+        c = Atelier::Command.new(:cmd_name, default: true, &expected_block)
         expect(c).to have_received(:load).once
       end
     end
   end
 
   describe '#load' do
-    subject { Atelier::Command.new(:cmd_name, { default: true } ) } # default options avoid to get several command instance created
+    it 'loads the command synchronously' do
+      loaded = false
+      subject.load { loaded = true }
+      expect(loaded).to eq true
+    end
 
-    it 'gives the command to the block' do
-      subject.load { |cmd_name| expect(cmd_name).to eq subject }
+    it 'inject the command as block parameter' do
+      subject.load { |cmd| expect(cmd).to eq subject }
     end
 
     it 'is loading only when the block is executing' do
@@ -51,42 +65,69 @@ describe Atelier::Command do
     end
   end
 
-  describe '#parse_options!' do
+  describe '#loading_command' do
+    context 'while the command is loading' do
+      it 'returns nil right before to load' do
+        expect(subject.loading_command).to eq nil
+        subject.load {}
+      end
 
-    describe 'with declared options' do
+      it 'returns nil right after to load' do
+        subject.load {}
+        expect(subject.loading_command).to eq nil
+      end
+
+      it 'returns itself' do
+        subject.load { expect(subject.loading_command).to eq subject }
+      end
+    end
+
+    context 'while commands are loading' do
+      it 'returns the loading sub commands' do
+        subject.load do
+          subject.command(:sub_command) do |sub_command|
+            expect(subject.loading_command).to eq sub_command
+            sub_command.command(:sub_sub_command) do |sub_sub_command|
+              expect(subject.loading_command).to eq sub_sub_command
+            end
+            expect(subject.loading_command).to eq sub_command
+          end
+        end
+      end
+    end
+  end
+
+  # FIXME it should not be unit tested as it is not public
+  describe '#parse_options!' do
+    context 'with declared options' do
       switch_name = '--first'
       option_name = :first
 
-      before(:all) do
-        @cmd = Atelier::Command.new(:cmd_name)
-        @cmd.option(option_name, "#{switch_name} VALUE")
-        @cmd
-      end
+      before { subject.option(option_name, "#{switch_name} VALUE") }
 
       it 'forwards the message to option_parser' do
         params = ['arg1', 'arg2']
-        expect(@cmd.option_parser).to receive(:parse).with(params)
-        @cmd.send(:parse_options!, params)
+        expect(subject.option_parser).to receive(:parse).with(params)
+        subject.send(:parse_options!, params)
       end
 
       context 'when parsing declared options' do
-        expected_value = 'expected_value'
+        let(:parse_options_return) { subject.send(:parse_options!, ['arg1', switch_name, 'expected_value', 'arg2']) }
 
-        subject { @cmd.send(:parse_options!, ['arg1', switch_name, expected_value, 'arg2']) }
-
-        it { is_expected.to match_array ['arg1', 'arg2'] }
+        it { expect(parse_options_return).to match_array ['arg1', 'arg2'] }
 
         describe 'its options' do
-          subject { @cmd.options }
+          let(:options) {
+            subject.send(:parse_options!, ['arg1', switch_name, 'expected_value', 'arg2'])
+            subject.options
+          }
 
-          it { is_expected.to be_a Hash }
-          its([option_name]) { is_expected.to eq expected_value }
+          it { expect(options).to be_a Hash }
+          it { expect(options[option_name]).to eq 'expected_value' }
         end
       end
 
       context 'when parsing undeclared options' do
-        subject { @cmd }
-
         it 'raises an InvalidOption error' do
           expect { subject.send(:parse_options!, ['arg1', '--undeclared', 'arg2']) }.to raise_error(OptionParser::InvalidOption)
         end
@@ -96,144 +137,144 @@ describe Atelier::Command do
     describe 'without declared options' do
       expected_parameters = [:first_param, '--invalid-option']
 
-      before(:all) { @cmd = Atelier::Command.new(:cmd_name) }
-      subject { @cmd.send(:parse_options!, expected_parameters) }
-
       it 'does NOT raise InvalidOption' do
-        expect(subject).to eq expected_parameters
+        expect(subject.send(:parse_options!, expected_parameters)).to eq expected_parameters
       end
     end
   end
 
+  # FIXME it should not be unit tested as it is not public
   describe '#parse_arguments' do
-    before(:all) do
-      argument_parser = Atelier::ArgumentParser.new
-      argument_parser.param(:first_arg)
-      @cmd = Atelier::Command.new(:cmd_name, argument_parser: argument_parser)
-    end
-
-    subject { @cmd }
-
     it 'forwards the message to argument_parser' do
-      params = ['arg1', 'arg2']
-      expect(@cmd.argument_parser).to receive(:parse).with(params)
-      @cmd.send(:parse_arguments, params)
+      expect(subject.argument_parser).to receive(:parse).with('arg1', 'arg2')
+      subject.send(:parse_arguments, 'arg1', 'arg2')
     end
   end
 
   describe '#run' do
-    before(:all) do
-      @cmd = Atelier::Command.new(:cmd_name)
-      @cmd.action { |*params| params }
-    end
-    subject { @cmd }
+    before { subject.action {} }
 
     context 'with options' do
-      it 'receives parse_options!' do
-        params = ['arg1', 'arg2']
-        expect(@cmd).to receive(:parse_options!).with(params)
-        @cmd.run(*params)
+      context "when options are NOT declared" do
+        it "calls the action without parameters" do # FIXME ça ne devrait peut être pas... plutot OptionParser::InvalidOption ??
+          expect(subject.action).to receive(:call).with({})
+          subject.run('--option1', 'OPTION VALUE')
+        end
+      end
+
+      context "when options are declared" do
+        before { subject.option(:declared_option, '--declared_option DECLARED_OPTION') }
+
+        it "calls the action without giving the options through parameters" do
+          expect(subject.action).to receive(:call).with({})
+          subject.run('--declared_option', 'OPTION VALUE')
+        end
+
+        it "provides the option through options" do
+          expect(subject.action).to receive(:call) do
+            expect(subject.options).to eq(declared_option: 'OPTION VALUE')
+          end
+          subject.run('--declared_option', 'OPTION VALUE')
+        end
+
+        context "with undeclared options" do
+          it "raises an OptionParser::InvalidOption" do
+            expect {
+              subject.run('--undeclared_option', 'OPTION VALUE')
+            }.to raise_error(OptionParser::InvalidOption)
+          end
+        end
       end
     end
 
     context 'with parameters' do
-      parameter       = :param
-      expected_result = [parameter]
-
-      before(:all) do
-        @cmd = Atelier::Command.new(:cmd_name)
-        @cmd.action { |*args| args }
-      end
-
       context 'if NO arguments parsing is configured' do
-        subject { @cmd.run(parameter) }
-
-        it { is_expected.to be_a Array }
-        it { is_expected.to eq expected_result }
+        it "calls the action without parameters" do
+          expect(subject.action).to receive(:call).with({})
+          subject.run('param1', 'param2')
+        end
       end
 
       context 'if arguments parsing is configured' do
-        before(:all) do
-          argument_parser = Atelier::ArgumentParser.new
-          argument_parser.param(:first_arg)
-          @cmd = Atelier::Command.new(:cmd_name, argument_parser: argument_parser)
-          @cmd.action { |args| args }
-        end
+        before { subject.param(:first_param) }
 
-        it 'receives parse_arguments' do
-          params = ['arg1', 'arg2']
-          expect(@cmd).to receive(:parse_arguments).with(params)
-          @cmd.run(*params)
-        end
-
-        describe 'parsed arguments' do
-          subject { @cmd.run(*[parameter, :ignored]) }
-
-          its([:first_arg]) { is_expected.to eq parameter }
+        it "calls the action with the first_param parameters" do
+          expect(subject.action).to receive(:call).with(first_param: 'param1')
+          subject.run('param1', 'ignored_param')
         end
       end
+    end
 
+    context 'with options and parameters' do
+      before do
+        subject.param(:first_param)
+        subject.option(:declared_option, '--declared_option DECLARED_OPTION')
+      end
+
+      it "calls the action with the first_param parameters" do
+        expect(subject.action).to receive(:call).with(first_param: 'param1')
+        subject.run('--declared_option', 'DECLARED_OPTION', 'param1', 'ignored_param')
+      end
+
+      it "provides the option through options" do
+        expect(subject.action).to receive(:call) do
+          expect(subject.options).to eq(declared_option: 'DECLARED_OPTION')
+        end
+        subject.run('--declared_option', 'DECLARED_OPTION', 'param1', 'ignored_param')
+      end
     end
 
     context 'with an existing sub-command' do
-      before(:all) do
-        @cmd = Atelier::Command.new(:cmd_name) do |c|
-          c.command(:sub_cmd_name) { }
+      before { subject.command(:sub_cmd_name) {} }
+
+      context "when the first argument match the sub-command name" do
+        it 'calls `run` on the sub-command' do
+          expect(subject.commands[:sub_cmd_name]).to receive(:run).with('--option1', 'option1' 'param2')
+          subject.run('sub_cmd_name', '--option1', 'option1' 'param2')
         end
       end
 
-      subject { @cmd }
+      context "when the another argument match the sub-command name" do
+        it 'does NOT call `run` on the sub-command' do
+          expect(subject.commands[:sub_cmd_name]).to_not receive(:run)
+          subject.run('param1', 'sub_cmd_name')
+        end
 
-      it 'calls `run` on the sub-command' do
-        expect(subject.commands[:sub_cmd_name]).to receive(:run).with(:action_name, :param)
-        subject.run('sub_cmd_name', :action_name, :param)
+        it 'calls command action' do
+          expect(subject.action).to receive(:call)
+          subject.run('param1', 'sub_cmd_name')
+        end
       end
     end
-  end
-
-  describe '#action' do
-    before(:all) do
-      @cmd = Atelier::Command.new(:cmd_name) do |c|
-        c.action { :expected_result }
-      end
-    end
-    subject { @cmd.action }
-
-    it { is_expected.to be_a Proc }
   end
 
   describe '#commands' do
-    before(:all) do
-      @sub = nil
-      @cmd = Atelier::Command.new(:cmd_name) do |c|
-        c.command(:sub_cmd_name) { |sub| @sub = sub }
-      end
+    before { subject.command(:sub_cmd_name) {} }
+
+    let(:commands) { subject.commands }
+
+    it { expect(commands.size).to eq 5 }
+
+    # FIXME Maybe it should not be tested here
+    pending "links the command as commands super-command" do
+      expect(commands.values.map(&:super_command).uniq).to eq [subject]
     end
 
-    subject { @cmd.commands }
-
-    its(:size) { is_expected.to eq 5 }
-
     describe 'its sub command' do
-      subject { @cmd.commands[:sub_cmd_name] }
+      let(:sub_command) { commands[:sub_cmd_name] }
 
-      it { is_expected.to be_a Atelier::Command }
-      its(:name) { is_expected.to eq :sub_cmd_name }
-
-      it 'its super_command is_expected.to equal the parent command' do
-        expect(subject.super_command).to eq @cmd
-      end
+      it { expect(sub_command).to be_a Atelier::Command }
+      it { expect(sub_command.name).to eq :sub_cmd_name }
     end
   end
 
   describe 'default commands' do
-    before(:all) { @cmd = Atelier::Command.new(:cmd_name) {} }
-    subject      { @cmd.commands }
+    let(:commands) { subject.commands }
 
-    it { is_expected.to include :help }
-    it { is_expected.to include :commands }
-    it { is_expected.to include :complete }
-    it { is_expected.to include :completion }
+    it { expect(commands).to include :help }
+    it { expect(commands).to include :commands }
+    it { expect(commands).to include :complete }
+    it { expect(commands).to include :completion }
   end
 
 
@@ -255,7 +296,6 @@ describe Atelier::Command do
     end
   end
 
-
   describe '#available_switche_names' do
     before(:all) do
       @cmd = Atelier::Command.new(:cmd_name) do |cmd_name|
@@ -266,5 +306,4 @@ describe Atelier::Command do
 
     it { is_expected.to match_array ['-a', '--alert'] }
   end
-
 end
