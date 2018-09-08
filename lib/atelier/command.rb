@@ -1,12 +1,13 @@
 require 'atelier/command_dsl'
 require 'atelier/parameterable'
+require 'atelier/optionable'
 require 'atelier/default_commands'
-require 'optparse'
 
 module Atelier
   class Command
     include CommandDSL
     include Parameterable
+    include Optionable
 
     attr_accessor :name,
       :super_command,
@@ -20,10 +21,7 @@ module Atelier
     attr_accessor :title,
       :description
 
-    attr_accessor :commands,
-      :option_parser,
-      :options_completions,
-      :options
+    attr_accessor :commands
 
     def loading?
       !!@loading
@@ -43,10 +41,6 @@ module Atelier
       # TODO commands should be an array implemented as commands_by_name.values
       # TODO sharing all default commands is faster but more complicated
       @commands = default? ? {} : ::Atelier::Default.all
-
-      @option_parser   = OptionParser.new
-      @options_completions = {}
-      @options             = {}
 
       # FIXME technically, it's not currently loading. So why block_given? was useful?
       @loading = false # block_given?
@@ -82,26 +76,7 @@ module Atelier
       end
     end
 
-    # FIXME all the options management should be in a mixin
-    def available_switches
-      switches = @option_parser.top.list # give the list of the custom switches
-      Array.new(switches)
-    end
-
-    def available_switche_names
-      names = available_switches.collect { |switch| [switch.long, switch.short] }
-      names.flatten
-    end
-
     private
-
-    def parse_options!(parameters)
-      if !available_switches.empty?
-        @option_parser.parse(parameters)
-      else
-        parameters
-      end
-    end
 
     def inspect
       "#<#{self.class.name}:#{object_id} @name=#{name.inspect}, @commands=#{commands.keys.inspect}>"
