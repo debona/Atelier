@@ -143,14 +143,6 @@ describe Atelier::Command do
     end
   end
 
-  # FIXME it should not be unit tested as it is not public
-  describe '#parse_arguments' do
-    it 'forwards the message to argument_parser' do
-      expect(subject.argument_parser).to receive(:parse).with('arg1', 'arg2')
-      subject.send(:parse_arguments, 'arg1', 'arg2')
-    end
-  end
-
   describe '#run' do
     before { subject.action {} }
 

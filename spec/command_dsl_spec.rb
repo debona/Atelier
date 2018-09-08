@@ -10,7 +10,7 @@ describe Atelier::CommandDSL do
   class CmdClass
     include Atelier::CommandDSL
 
-    attr_accessor :commands, :argument_parser, :option_parser, :options_completions
+    attr_accessor :commands, :option_parser, :options_completions
 
     def application
       @application ||= Atelier::Application.new
@@ -20,15 +20,7 @@ describe Atelier::CommandDSL do
   subject { CmdClass.new }
 
   before do
-    subject.argument_parser = Atelier::ArgumentParser.new
     subject.option_parser = OptionParser.new
-  end
-
-  describe '#param' do
-    it 'delegates the arguments parsing description' do
-      expect(subject.argument_parser).to receive(:param).with(:param_name)
-      subject.param(:param_name)
-    end
   end
 
   describe '#option' do
@@ -51,13 +43,6 @@ describe Atelier::CommandDSL do
           it { expect(subject.options_completions[switch]).to eq expected_proc }
         end
       end
-    end
-  end
-
-  describe '#params' do
-    it 'delegates the arguments parsing description' do
-      expect(subject.argument_parser).to receive(:params).with(:param_name)
-      subject.params(:param_name)
     end
   end
 

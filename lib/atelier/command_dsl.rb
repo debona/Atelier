@@ -1,5 +1,3 @@
-require 'atelier/argument_parser'
-
 module Atelier
   module CommandDSL
 
@@ -20,15 +18,6 @@ module Atelier
       longs_and_shorts.each { |name| @options_completions[name] = completion_block }
     end
 
-    def param(param_name)
-      @argument_parser ||= ArgumentParser.new
-      @argument_parser.param(param_name)
-    end
-
-    def params(params_name)
-      @argument_parser ||= ArgumentParser.new
-      @argument_parser.params(params_name)
-    end
 
     def action(&block)
       @action = block if block_given?

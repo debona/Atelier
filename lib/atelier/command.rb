@@ -1,11 +1,12 @@
 require 'atelier/command_dsl'
+require 'atelier/parameterable'
 require 'atelier/default_commands'
-require 'atelier/argument_parser'
 require 'optparse'
 
 module Atelier
   class Command
     include CommandDSL
+    include Parameterable
 
     attr_accessor :name,
       :super_command,
@@ -20,7 +21,6 @@ module Atelier
       :description
 
     attr_accessor :commands,
-      :argument_parser,
       :option_parser,
       :options_completions,
       :options
@@ -44,7 +44,6 @@ module Atelier
       # TODO sharing all default commands is faster but more complicated
       @commands = default? ? {} : ::Atelier::Default.all
 
-      @argument_parser = ArgumentParser.new
       @option_parser   = OptionParser.new
       @options_completions = {}
       @options             = {}
@@ -78,7 +77,7 @@ module Atelier
         return command.run(*argv)
       else
         argv_without_options = parse_options!(argv)
-        parameters = parse_arguments(argv_without_options)
+        parameters = parse_parameters(argv_without_options)
         return @action&.call(**parameters)
       end
     end
@@ -102,11 +101,6 @@ module Atelier
       else
         parameters
       end
-    end
-
-    # FIXME all the parameters management should be in a mixin
-    def parse_arguments(*parameters)
-      @argument_parser.parse(*parameters)
     end
 
     def inspect
