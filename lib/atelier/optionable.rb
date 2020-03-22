@@ -30,18 +30,18 @@ module Atelier
     end
 
 
-    def available_switches
+    def declared_switches
       switches = option_parser.top.list # give the list of the custom switches
       Array.new(switches)
     end
 
-    def available_switche_names
-      names = available_switches.collect { |switch| [switch.long, switch.short] }
+    def declared_switch_names
+      names = declared_switches.collect { |switch| [switch.long, switch.short] }
       names.flatten
     end
 
     def parse_options!(parameters)
-      if available_switches.any?
+      if declared_switches.any?
         option_parser.parse(parameters)
       else
         parameters

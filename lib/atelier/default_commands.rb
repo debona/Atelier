@@ -36,7 +36,7 @@ module Atelier
 
           puts "#{cmd.description}"
 
-          switches = cmd.available_switches # give the list of the custom switches
+          switches = cmd.declared_switches # give the list of the custom switches
           unless switches.empty?
             puts 'Options:'
             switches.each do |switch|
@@ -109,7 +109,7 @@ module Atelier
             possibilities += Dir[current + '*']
             possibilities -= ['.', '..']
             possibilities += cmd.commands.keys.grep(current_pattern) if args.size <= 1 # because the command can only be in first place
-            possibilities += cmd.available_switche_names.grep(current_pattern)
+            possibilities += cmd.declared_switch_names.grep(current_pattern)
           end
 
           puts possibilities.join("\n")

@@ -73,33 +73,33 @@ describe Atelier::Optionable do
     end
   end
 
-  describe '#available_switches' do
+  describe '#declared_switches' do
     let(:optionable) do
       o = Object.new.extend Atelier::Optionable
       o.option(:alert, '-a', '--alert ALERT', 'Alert')
       o
     end
 
-    subject { optionable.available_switches }
+    subject { optionable.declared_switches }
 
     its(:size) { is_expected.to eq 1 }
 
     describe 'the defined switch' do
-      subject { optionable.available_switches.first }
+      subject { optionable.declared_switches.first }
 
       its(:short) { is_expected.to match_array ['-a'] }
       its(:long)  { is_expected.to match_array ['--alert'] }
     end
   end
 
-  describe '#available_switche_names' do
+  describe '#declared_switch_names' do
     let(:optionable) do
       o = Object.new.extend Atelier::Optionable
       o.option(:alert, '-a', '--alert ALERT', 'Alert')
       o
     end
 
-    subject { optionable.available_switche_names }
+    subject { optionable.declared_switch_names }
 
     it { is_expected.to match_array ['-a', '--alert'] }
   end
