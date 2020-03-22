@@ -17,13 +17,6 @@ describe Atelier::CommandDSL do
 
   subject { CmdClass.new }
 
-  describe '#action' do
-    expected_proc = Proc.new { :overriden }
-    before { subject.action(&expected_proc) }
-
-    its(:action) { is_expected.to eq expected_proc }
-  end
-
   describe '#command' do
     it 'does NOT trigger the run method' do
       expect(subject).to_not receive(:run)

@@ -47,6 +47,13 @@ describe Atelier::Command do
     end
   end
 
+  describe '#action' do
+    expected_proc = Proc.new { :overriden }
+    before { subject.action(&expected_proc) }
+
+    its(:action) { is_expected.to eq expected_proc }
+  end
+
   describe '#load' do
     it 'loads the command synchronously' do
       loaded = false

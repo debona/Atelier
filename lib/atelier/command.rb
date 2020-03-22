@@ -27,6 +27,11 @@ module Atelier
       !!@loading
     end
 
+    def action(&block)
+      @action = block if block_given?
+      @action
+    end
+
     def initialize(name, super_command: nil, application: super_command&.application, default: false, &block)
       @name          = name
       @super_command = super_command
