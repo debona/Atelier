@@ -5,6 +5,10 @@ module Atelier
       @arguments_range = {}
     end
 
+    def declared_params
+      @arguments_range.keys
+    end
+
     def arguments
       @arguments_range.keys
     end

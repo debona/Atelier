@@ -76,8 +76,12 @@ module Atelier
         return command.run(*argv)
       else
         argv_without_options = parse_options!(argv)
-        parameters = parse_parameters(argv_without_options)
-        return @action&.call(**parameters)
+        argv_or_parameters_hash = parse_parameters(argv_without_options)
+        if Array === argv_or_parameters_hash
+          return @action&.call(*argv_or_parameters_hash)
+        else
+          return @action&.call(**argv_or_parameters_hash)
+        end
       end
     end
 

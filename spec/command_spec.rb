@@ -109,8 +109,8 @@ describe Atelier::Command do
 
     context 'with options' do
       context "when options are NOT declared" do
-        it "calls the action without parameters" do # FIXME ça ne devrait peut être pas... plutot OptionParser::InvalidOption ??
-          expect(subject.action).to receive(:call).with({})
+        it "calls the action with the given options as raw parameters" do
+          expect(subject.action).to receive(:call).with('--option1', 'OPTION VALUE')
           subject.run('--option1', 'OPTION VALUE')
         end
       end
@@ -119,7 +119,7 @@ describe Atelier::Command do
         before { subject.option(:declared_option, '--declared_option DECLARED_OPTION') }
 
         it "calls the action without giving the options through parameters" do
-          expect(subject.action).to receive(:call).with({})
+          expect(subject.action).to receive(:call).with(no_args)
           subject.run('--declared_option', 'OPTION VALUE')
         end
 
@@ -142,8 +142,8 @@ describe Atelier::Command do
 
     context 'with parameters' do
       context 'if NO arguments parsing is configured' do
-        it "calls the action without parameters" do
-          expect(subject.action).to receive(:call).with({})
+        it "calls the action the raw parameters" do
+          expect(subject.action).to receive(:call).with('param1', 'param2')
           subject.run('param1', 'param2')
         end
       end
@@ -151,7 +151,7 @@ describe Atelier::Command do
       context 'if arguments parsing is configured' do
         before { subject.param(:first_param) }
 
-        it "calls the action with the first_param parameters" do
+        it "calls the action with the first_param parameters as a keyword arg" do
           expect(subject.action).to receive(:call).with(first_param: 'param1')
           subject.run('param1', 'ignored_param')
         end
@@ -159,21 +159,30 @@ describe Atelier::Command do
     end
 
     context 'with options and parameters' do
-      before do
-        subject.param(:first_param)
-        subject.option(:declared_option, '--declared_option DECLARED_OPTION')
-      end
-
-      it "calls the action with the first_param parameters" do
-        expect(subject.action).to receive(:call).with(first_param: 'param1')
-        subject.run('--declared_option', 'DECLARED_OPTION', 'param1', 'ignored_param')
-      end
-
-      it "provides the option through options" do
-        expect(subject.action).to receive(:call) do
-          expect(subject.options).to eq(declared_option: 'DECLARED_OPTION')
+      context "when options and parameters are NOT declared" do
+        it "calls the action with the given argv as raw parameters" do
+          expect(subject.action).to receive(:call).with('param1', '--option1', 'OPTION VALUE', 'param2')
+          subject.run('param1', '--option1', 'OPTION VALUE', 'param2')
         end
-        subject.run('--declared_option', 'DECLARED_OPTION', 'param1', 'ignored_param')
+      end
+
+      context "when options and parameters are declared" do
+        before do
+          subject.param(:first_param)
+          subject.option(:declared_option, '--declared_option DECLARED_OPTION')
+        end
+
+        it "calls the action with the first_param parameters" do
+          expect(subject.action).to receive(:call).with(first_param: 'param1')
+          subject.run('--declared_option', 'DECLARED_OPTION', 'param1', 'ignored_param')
+        end
+
+        it "provides the option through options" do
+          expect(subject.action).to receive(:call) do
+            expect(subject.options).to eq(declared_option: 'DECLARED_OPTION')
+          end
+          subject.run('--declared_option', 'DECLARED_OPTION', 'param1', 'ignored_param')
+        end
       end
     end
 

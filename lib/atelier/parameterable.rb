@@ -15,8 +15,12 @@ module Atelier
       @argument_parser ||= ArgumentParser.new
     end
 
-    def parse_parameters(*parameters)
-      argument_parser.parse(*parameters)
+    def parse_parameters(parameters)
+      if argument_parser.declared_params.any?
+        argument_parser.parse(parameters)
+      else
+        parameters
+      end
     end
   end
 end
