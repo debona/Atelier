@@ -149,7 +149,7 @@ describe 'default command' do
 
       context 'begining with a sub command' do
         it 'forwards the completion to the matching sub command' do
-          expect(@cmd.commands[:sub_command]).to receive(:run).with(:complete, '')
+          expect(@cmd.sub_commands_hash[:sub_command]).to receive(:run).with(:complete, '')
           @cmd.run(:complete, 'sub_command', '')
         end
       end

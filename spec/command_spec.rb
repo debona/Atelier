@@ -191,14 +191,16 @@ describe Atelier::Command do
 
       context "when the first argument match the sub-command name" do
         it 'calls `run` on the sub-command' do
-          expect(subject.commands[:sub_cmd_name]).to receive(:run).with('--option1', 'option1' 'param2')
+          sub_command = subject.sub_commands_hash[:sub_cmd_name]
+          expect(sub_command).to receive(:run).with('--option1', 'option1' 'param2')
           subject.run('sub_cmd_name', '--option1', 'option1' 'param2')
         end
       end
 
       context "when the another argument match the sub-command name" do
         it 'does NOT call `run` on the sub-command' do
-          expect(subject.commands[:sub_cmd_name]).to_not receive(:run)
+          sub_command = subject.sub_commands_hash[:sub_cmd_name]
+          expect(sub_command).to_not receive(:run)
           subject.run('param1', 'sub_cmd_name')
         end
 
@@ -210,32 +212,10 @@ describe Atelier::Command do
     end
   end
 
-  describe '#commands' do
-    before { subject.command(:sub_cmd_name) {} }
-
-    let(:commands) { subject.commands }
-
-    it { expect(commands.size).to eq 5 }
-
-    # FIXME Maybe it should not be tested here
-    pending "links the command as commands super-command" do
-      expect(commands.values.map(&:super_command).uniq).to eq [subject]
-    end
-
-    describe 'its sub command' do
-      let(:sub_command) { commands[:sub_cmd_name] }
-
-      it { expect(sub_command).to be_a Atelier::Command }
-      it { expect(sub_command.name).to eq :sub_cmd_name }
-    end
-  end
-
   describe 'default commands' do
-    let(:commands) { subject.commands }
-
-    it { expect(commands).to include :help }
-    it { expect(commands).to include :commands }
-    it { expect(commands).to include :complete }
-    it { expect(commands).to include :completion }
+    it { expect(subject.sub_command_names).to include :help }
+    it { expect(subject.sub_command_names).to include :commands }
+    it { expect(subject.sub_command_names).to include :complete }
+    it { expect(subject.sub_command_names).to include :completion }
   end
 end

@@ -21,8 +21,6 @@ module Atelier
     attr_accessor :title,
       :description
 
-    attr_accessor :commands
-
     def loading?
       !!@loading
     end
@@ -45,7 +43,9 @@ module Atelier
       # TODO the commands hash should be renamed commands_by_name
       # TODO commands should be an array implemented as commands_by_name.values
       # TODO sharing all default commands is faster but more complicated
-      @commands = default? ? {} : ::Atelier::Default.all
+      unless default?
+        sub_commands_hash.merge!(::Atelier::Default.all)
+      end
 
       # FIXME technically, it's not currently loading. So why block_given? was useful?
       @loading = false # block_given?
@@ -61,19 +61,16 @@ module Atelier
 
     def loading_command
       return nil unless loading?
-      last_loading_command = commands.values.select(&:loading?).last
+      last_loading_command = sub_commands.select(&:loading?).last
       last_loading_command&.loading_command || self
     end
 
     def run(*argv)
-      if commands[argv.first&.to_sym]
-        # TODO a private subcommand(for:) method may be more readable
-        # TODO in a same way, a run_subcommand method would be more readable too
-        cmd_name = argv.shift.to_sym
-        command = commands[cmd_name]
+      if sub_command = sub_commands_hash[argv.first&.to_sym]
         # FIXME this is really strange. It requires at least a clear explanation
-        command.super_command = self # useful for default commands
-        return command.run(*argv)
+        sub_command.super_command = self # useful for default commands
+        argv.shift
+        return sub_command.run(*argv)
       else
         argv_without_options = parse_options!(argv)
         argv_or_parameters_hash = parse_parameters(argv_without_options)
@@ -88,7 +85,7 @@ module Atelier
     private
 
     def inspect
-      "#<#{self.class.name}:#{object_id} @name=#{name.inspect}, @commands=#{commands.keys.inspect}>"
+      "#<#{self.class.name}:#{object_id} @name=#{name.inspect}, sub_command_names=#{sub_command_names.inspect}>"
     end
   end
 end

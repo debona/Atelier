@@ -18,7 +18,7 @@ module Atelier
         @commands.action do
           cmd = @commands.super_command
 
-          cmd.commands.each { |cmd_name, cmd| puts cmd_name }
+          cmd.sub_command_names.each { |cmd_name| puts cmd_name }
         end
       end
       @commands
@@ -46,13 +46,13 @@ module Atelier
           end
 
           puts 'Default commands:'
-          cmd.commands.select.each do |command_name, command|
-            puts "  - #{cmd.name} #{command_name}" if command.default?
+          cmd.sub_commands.select(&:default?).each do |sub_cmd|
+            puts "  - #{cmd.name} #{sub_cmd.name}"
           end
 
           puts 'Commands:'
-          cmd.commands.each do |command_name, command|
-            puts "  - #{cmd.name} #{command_name}" unless command.default?
+          cmd.sub_commands.reject(&:default?).each do |sub_cmd|
+            puts "  - #{cmd.name} #{sub_cmd.name}"
           end
         end
       end
@@ -92,9 +92,9 @@ module Atelier
         @complete.action do |*args|
           cmd = @complete.super_command
 
-          if args.first && cmd.commands.key?(args.first.to_sym)
+          if args.first && cmd.sub_command_names.include?(args.first.to_sym)
             sub_command = args.shift.to_sym
-            cmd.run(sub_command, :complete, *args) if cmd.commands[sub_command].commands.key?(:complete)
+            cmd.run(sub_command, :complete, *args) if cmd.sub_commands_hash[sub_command].sub_command_names.include?(:complete)
             next # leave from the action block; `return` would leave the currently executed method
           end
 
@@ -108,7 +108,7 @@ module Atelier
           else
             possibilities += Dir[current + '*']
             possibilities -= ['.', '..']
-            possibilities += cmd.commands.keys.grep(current_pattern) if args.size <= 1 # because the command can only be in first place
+            possibilities += cmd.sub_command_names.grep(current_pattern) if args.size <= 1 # because the command can only be in first place
             possibilities += cmd.declared_switch_names.grep(current_pattern)
           end
 
