@@ -1,12 +1,12 @@
 require 'spec_helper'
 
 require 'atelier/application'
-require 'atelier/command_dsl'
+require 'atelier/composable'
 
-describe Atelier::CommandDSL do
+describe Atelier::Composable do
 
   class CmdClass
-    include Atelier::CommandDSL
+    include Atelier::Composable
 
     attr_accessor :commands
 

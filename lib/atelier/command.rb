@@ -1,11 +1,11 @@
-require 'atelier/command_dsl'
+require 'atelier/composable'
 require 'atelier/parameterable'
 require 'atelier/optionable'
 require 'atelier/default_commands'
 
 module Atelier
   class Command
-    include CommandDSL
+    include Composable
     include Parameterable
     include Optionable
 
