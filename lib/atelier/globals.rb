@@ -16,10 +16,10 @@ module Atelier
       if root_command.nil?
         application.define_root_command(name, options, &block)
         application.run(*ARGV)
-      elsif root_command.loading_command
-        root_command.loading_command.command(name, options, &block)
+      elsif application.command_load_requested?
+        application.load_requested_command(name, options, &block)
       else
-        raise "There already is a root command and there are no more loading commands."
+        raise "There already is a root command and there are no command loading requested."
       end
     end
   end

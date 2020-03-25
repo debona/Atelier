@@ -64,44 +64,6 @@ describe Atelier::Command do
     it 'inject the command as block parameter' do
       subject.load { |cmd| expect(cmd).to eq subject }
     end
-
-    it 'is loading only when the block is executing' do
-      expect(subject.loading?).to eq false
-      subject.load { expect(subject.loading?).to eq true }
-      expect(subject.loading?).to eq false
-    end
-  end
-
-  describe '#loading_command' do
-    context 'while the command is loading' do
-      it 'returns nil right before to load' do
-        expect(subject.loading_command).to eq nil
-        subject.load {}
-      end
-
-      it 'returns nil right after to load' do
-        subject.load {}
-        expect(subject.loading_command).to eq nil
-      end
-
-      it 'returns itself' do
-        subject.load { expect(subject.loading_command).to eq subject }
-      end
-    end
-
-    context 'while commands are loading' do
-      it 'returns the loading sub commands' do
-        subject.load do
-          subject.command(:sub_command) do |sub_command|
-            expect(subject.loading_command).to eq sub_command
-            sub_command.command(:sub_sub_command) do |sub_sub_command|
-              expect(subject.loading_command).to eq sub_sub_command
-            end
-            expect(subject.loading_command).to eq sub_command
-          end
-        end
-      end
-    end
   end
 
   describe '#run' do

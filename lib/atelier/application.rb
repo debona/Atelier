@@ -19,20 +19,34 @@ module Atelier
       @root_command
     end
 
-    def locate_command(file_name)
-      file_name = file_name.to_s
-      absolute_path = File.absolute_path(file_name)
-
-      return absolute_path if File.exists?(absolute_path)
-      cmd_path = `which #{file_name}`
-      cmd_path.strip! if cmd_path
-    end
-
     def run(*parameters)
       root_command.run(*parameters)
     rescue Exception => e
       logger.error e
       # TODO set exit status
+    end
+
+
+    def command_load_requested?
+      !!@command_load_requester
+    end
+
+    def request_command_load(command_load_requester, cmd_name)
+      @command_load_requester = command_load_requester
+      load(cmd_name)
+    rescue LoadError
+      # Mimic the require behavior that make require 'foo' => loading the foo.rb file
+      if cmd_name.downcase.end_with?('.rb')
+        raise
+      else
+        load("#{cmd_name}.rb")
+      end
+    ensure
+      @command_load_requester = nil
+    end
+
+    def load_requested_command(name, **options, &block)
+      @command_load_requester.command(name, options, &block)
     end
   end
 end

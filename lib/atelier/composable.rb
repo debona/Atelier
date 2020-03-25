@@ -15,9 +15,7 @@ module Atelier
 
 
     def load_command(cmd_name)
-      cmd_path = application.locate_command(cmd_name)
-      # FIXME unfortunately `require` prevents the reuse of commands defined in files
-      require(cmd_path) unless cmd_path.nil? || cmd_path.empty?
+      application.request_command_load(self, cmd_name)
     end
 
     def command(cmd_name, **options, &block)

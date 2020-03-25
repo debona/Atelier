@@ -48,17 +48,44 @@ describe Atelier::Application do
     end
   end
 
-  describe '#locate_command' do
-    let(:located_command) { subject.locate_command(file_name) }
+  describe '#request_command_load' do
+    let(:command) { Atelier::Command.new(:command_name) }
 
-    context 'with a file available from the $PATH' do
-      let(:file_name) { :bash }
-      it { expect(located_command).to eq '/bin/bash' }
+    it "loads the command file" do
+      expect(subject).to receive(:load).with('loaded_command')
+      subject.request_command_load(command, 'loaded_command')
     end
 
-    context 'with a file not available from the $PATH' do
-      let(:file_name) { :qsgfqDs }
-      it { expect(located_command).to be_nil }
+    it "mimics the require behavior when the .rb extention is omitted" do
+      expect(subject).to receive(:load).with('loaded_command').and_raise(LoadError.new)
+      expect(subject).to receive(:load).with('loaded_command.rb')
+      subject.request_command_load(command, 'loaded_command')
+    end
+  end
+
+  describe '#command_load_requested?' do
+    let(:command) { Atelier::Command.new(:command_name) }
+
+    it "is true only while the command is loading" do
+      expect(subject.command_load_requested?).to eq false
+      expect(subject).to receive(:load) do
+        expect(subject.command_load_requested?).to eq true
+      end
+      subject.request_command_load(command, 'loaded_command')
+      expect(subject.command_load_requested?).to eq false
+    end
+  end
+
+  describe '#load_requested_command' do
+    expected_block = Proc.new { :expected_block }
+    let(:command) { Atelier::Command.new(:command_name) }
+
+    it "forward the command loading while request_command_load is called" do
+      expect(subject).to receive(:load) do
+        expect(command).to receive(:command).with('name',  opt1: true, &expected_block)
+        subject.load_requested_command('name',  opt1: true, &expected_block)
+      end
+      subject.request_command_load(command, 'loaded_command')
     end
   end
 end

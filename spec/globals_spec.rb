@@ -41,13 +41,12 @@ describe Atelier::Globals do
       end
     end
 
-    context 'when the root_command is loading' do
-      it 'forwards the command call on the root_command loading command' do
+    context 'when there is a command loading requested' do
+      it 'forwards to the load_requested_command method on application' do
         subject.command(:root_command) do |root_command|
-          loading_command = double(:loading_command)
-          allow(root_command).to receive(:loading_command).and_return(loading_command)
-          expect(loading_command).to receive(:command).with(:new_cmd, {}, &expected_block)
-          subject.command(:new_cmd, {}, &expected_block)
+          expect(subject.application).to receive(:command_load_requested?).and_return(true)
+          expect(subject.application).to receive(:load_requested_command).with('name',  opt1: true, &expected_block)
+          subject.command('name',  opt1: true, &expected_block)
         end
       end
     end

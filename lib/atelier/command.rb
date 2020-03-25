@@ -21,9 +21,6 @@ module Atelier
     attr_accessor :title,
       :description
 
-    def loading?
-      !!@loading
-    end
 
     def action(&block)
       @action = block if block_given?
@@ -47,23 +44,14 @@ module Atelier
         sub_commands_hash.merge!(::Atelier::Default.all)
       end
 
-      # FIXME technically, it's not currently loading. So why block_given? was useful?
-      @loading = false # block_given?
       load(&block) if block_given?
     end
 
     # TODO A callback system may be useful
     def load
-      @loading = true
       yield(self)
-      @loading = false
     end
 
-    def loading_command
-      return nil unless loading?
-      last_loading_command = sub_commands.select(&:loading?).last
-      last_loading_command&.loading_command || self
-    end
 
     def run(*argv)
       if sub_command = sub_commands_hash[argv.first&.to_sym]
