@@ -1,4 +1,3 @@
-require 'singleton'
 require 'logger'
 
 require 'atelier/command'
@@ -13,7 +12,7 @@ module Atelier
       @logger.level = Logger::WARN
     end
 
-    def load_root_command(name, **options, &block)
+    def define_root_command(name, **options, &block)
       logger.warn "The root_command '#{root_command.name}' is overridden by '#{name}'" if root_command
       @root_command = Command.new(name, application: self, **options)
       @root_command.load(&block)

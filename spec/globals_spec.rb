@@ -21,7 +21,7 @@ describe Atelier::Globals do
     context 'when there is no application root_command yet' do
       it 'loads the command as the root one' do
         allow(subject.application).to receive(:run)
-        expect(subject.application).to receive(:load_root_command).with(:name, an_option: nil, &expected_block)
+        expect(subject.application).to receive(:define_root_command).with(:name, an_option: nil, &expected_block)
         subject.command(:name, an_option: nil, &expected_block)
       end
 

@@ -8,21 +8,21 @@ describe Atelier::Application do
   its(:root_command) { is_expected.to eq nil }
   its(:logger) { is_expected.to be_a Logger }
 
-  describe '#load_root_command' do
+  describe '#define_root_command' do
     it 'defines the application root_command' do
       expect {
-        subject.load_root_command(:root_command) {}
+        subject.define_root_command(:root_command) {}
       }.to change { subject.root_command }.from(nil).to an_instance_of(Atelier::Command)
     end
 
     it 'loads the root_command synchronously' do
       executed = false
-      subject.load_root_command(:root_command) { executed = true }
+      subject.define_root_command(:root_command) { executed = true }
       expect(executed).to eq true
     end
 
     it 'creates the app root_command according to the given parameters' do
-      subject.load_root_command(:root_command, default: true) {}
+      subject.define_root_command(:root_command, default: true) {}
       expect(subject.root_command.name).to eq :root_command
       expect(subject.root_command).to be_default
     end

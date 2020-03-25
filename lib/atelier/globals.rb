@@ -14,7 +14,7 @@ module Atelier
       root_command = application.root_command
 
       if root_command.nil?
-        application.load_root_command(name, options, &block)
+        application.define_root_command(name, options, &block)
         application.run(*ARGV)
       elsif root_command.loading_command
         root_command.loading_command.command(name, options, &block)
