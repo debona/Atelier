@@ -1,6 +1,7 @@
 require 'logger'
 
 require 'atelier/command'
+require 'atelier/defaults'
 
 module Atelier
   class Application
@@ -32,6 +33,7 @@ module Atelier
     end
 
     def request_command_load(command_load_requester, cmd_name)
+      cmd_name = cmd_name.to_s
       @command_load_requester = command_load_requester
       load(cmd_name)
     rescue LoadError

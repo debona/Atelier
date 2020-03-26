@@ -22,9 +22,9 @@ describe Atelier::Application do
     end
 
     it 'creates the app root_command according to the given parameters' do
-      subject.define_root_command(:root_command, default: true) {}
+      subject.define_root_command(:root_command, defaults: []) {}
       expect(subject.root_command.name).to eq :root_command
-      expect(subject.root_command).to be_default
+      expect(subject.root_command.defaults).to eq []
     end
   end
 

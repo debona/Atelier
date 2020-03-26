@@ -1,7 +1,6 @@
 require 'atelier/composable'
 require 'atelier/parameterable'
 require 'atelier/optionable'
-require 'atelier/default_commands'
 
 module Atelier
   class Command
@@ -9,14 +8,11 @@ module Atelier
     include Parameterable
     include Optionable
 
+    # Options
     attr_accessor :name,
       :super_command,
-      :application
-
-    # FIXME Create a class to handle the default command
-    def default?
-      !!@default
-    end
+      :application,
+      :defaults
 
     attr_accessor :title,
       :description
@@ -27,36 +23,31 @@ module Atelier
       @action
     end
 
-    def initialize(name, super_command: nil, application: super_command&.application, default: false, &block)
-      @name          = name
+    def initialize(name, super_command: nil, application: super_command&.application, defaults: Defaults::ALL, &block)
+      @name = name
       @super_command = super_command
-      @application   = application
-      @default       = default
+      @application = application
+      @defaults = defaults
 
-      @title           = nil
-      @description     = nil
-      @action          = nil
-
-      # TODO the commands hash should be renamed commands_by_name
-      # TODO commands should be an array implemented as commands_by_name.values
-      # TODO sharing all default commands is faster but more complicated
-      unless default?
-        sub_commands_hash.merge!(::Atelier::Default.all)
-      end
+      @title = nil
+      @description = nil
+      @action = nil
 
       load(&block) if block_given?
     end
 
     # TODO A callback system may be useful
     def load
+      @defaults.each do |default_name|
+        default_cmd = Defaults.factory(default_name, self)
+        sub_commands_hash[default_name] = default_cmd
+      end
       yield(self)
     end
 
 
     def run(*argv)
       if sub_command = sub_commands_hash[argv.first&.to_sym]
-        # FIXME this is really strange. It requires at least a clear explanation
-        sub_command.super_command = self # useful for default commands
         argv.shift
         return sub_command.run(*argv)
       else

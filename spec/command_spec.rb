@@ -9,7 +9,7 @@ describe Atelier::Command do
     its(:name) { is_expected.to eq :cmd_name }
     its(:super_command) { is_expected.to eq nil }
     its(:application) { is_expected.to eq nil }
-    its(:default?) { is_expected.to eq false }
+    its(:defaults) { is_expected.to eq Atelier::Defaults::ALL }
 
     its(:title) { is_expected.to eq nil }
     its(:description) { is_expected.to eq nil }
@@ -20,14 +20,14 @@ describe Atelier::Command do
         Atelier::Command.new(:cmd_name,
           application:   :application,
           super_command: :expected_command,
-          default:       :something_true,
+          defaults:      [:help],
         )
       }
 
       its(:name) { is_expected.to eq :cmd_name }
       its(:super_command) { is_expected.to eq :expected_command }
       its(:application) { is_expected.to eq :application }
-      its(:default?) { is_expected.to eq true }
+      its(:defaults) { is_expected.to eq [:help] }
 
       its(:title) { is_expected.to eq nil }
       its(:description) { is_expected.to eq nil }
@@ -39,9 +39,8 @@ describe Atelier::Command do
 
       it 'forwards the block to the load method' do
         allow_any_instance_of(Atelier::Command).to receive(:load) { |&block| expect(block).to eq expected_block }
-        # default options avoid to get several command instance created
-        # FIXME Will be useless when the default command has its proper class
-        c = Atelier::Command.new(:cmd_name, default: true, &expected_block)
+        # Empty defaults avoid to get several command instance created
+        c = Atelier::Command.new(:cmd_name, defaults: [], &expected_block)
         expect(c).to have_received(:load).once
       end
     end
@@ -172,12 +171,5 @@ describe Atelier::Command do
         end
       end
     end
-  end
-
-  describe 'default commands' do
-    it { expect(subject.sub_command_names).to include :help }
-    it { expect(subject.sub_command_names).to include :commands }
-    it { expect(subject.sub_command_names).to include :complete }
-    it { expect(subject.sub_command_names).to include :completion }
   end
 end
