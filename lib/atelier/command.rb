@@ -39,8 +39,7 @@ module Atelier
     # TODO A callback system may be useful
     def load
       @defaults.each do |default_name|
-        default_cmd = Defaults.factory(default_name, self)
-        sub_commands_hash[default_name] = default_cmd
+        sub_commands_hash[default_name] = Defaults.factory(default_name, self)
       end
       yield(self)
     end

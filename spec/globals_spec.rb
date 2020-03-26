@@ -32,11 +32,10 @@ describe Atelier::Globals do
       end
 
       it 'calls the application run method' do
-        if ARGV.any?
-          expect(subject.application).to receive(:run).with(*ARGV)
-        else
-          expect(subject.application).to receive(:run).with(no_args)
-        end
+        # The run method relies on ARGV which can be empty or not depending on how rspec has been run.
+        expect(subject.application).to receive(:run).with(
+          ARGV.any? ? ARGV : no_args
+        )
         subject.command(:name) {}
       end
     end
@@ -45,8 +44,8 @@ describe Atelier::Globals do
       it 'forwards to the load_requested_command method on application' do
         subject.command(:root_command) do |root_command|
           expect(subject.application).to receive(:command_load_requested?).and_return(true)
-          expect(subject.application).to receive(:load_requested_command).with('name',  opt1: true, &expected_block)
-          subject.command('name',  opt1: true, &expected_block)
+          expect(subject.application).to receive(:load_requested_command).with('name',  defaults: [], &expected_block)
+          subject.command('name',  defaults: [], &expected_block)
         end
       end
     end

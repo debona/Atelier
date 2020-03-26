@@ -1,9 +1,10 @@
 require 'spec_helper'
 
+require 'atelier/defaults'
 require 'atelier/command'
 
 describe Atelier::Command do
-  subject { Atelier::Command.new(:cmd_name) }
+  subject { described_class.new(:cmd_name) }
 
   describe '#initialize' do
     its(:name) { is_expected.to eq :cmd_name }
@@ -17,7 +18,7 @@ describe Atelier::Command do
 
     context 'with options' do
       subject {
-        Atelier::Command.new(:cmd_name,
+        described_class.new(:cmd_name,
           application:   :application,
           super_command: :expected_command,
           defaults:      [:help],
@@ -38,9 +39,9 @@ describe Atelier::Command do
       expected_block = Proc.new { :expected_block }
 
       it 'forwards the block to the load method' do
-        allow_any_instance_of(Atelier::Command).to receive(:load) { |&block| expect(block).to eq expected_block }
+        allow_any_instance_of(described_class).to receive(:load) { |&block| expect(block).to eq expected_block }
         # Empty defaults avoid to get several command instance created
-        c = Atelier::Command.new(:cmd_name, defaults: [], &expected_block)
+        c = described_class.new(:cmd_name, defaults: [], &expected_block)
         expect(c).to have_received(:load).once
       end
     end
