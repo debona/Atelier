@@ -33,9 +33,11 @@ describe Atelier::Globals do
 
       it 'calls the application run method' do
         # The run method relies on ARGV which can be empty or not depending on how rspec has been run.
-        expect(subject.application).to receive(:run).with(
-          ARGV.any? ? ARGV : no_args
-        )
+        if ARGV.any?
+          expect(subject.application).to receive(:run).with(*ARGV)
+        else
+          expect(subject.application).to receive(:run).with(no_args)
+        end
         subject.command(:name) {}
       end
     end
