@@ -9,8 +9,10 @@ module Atelier
           completion.title = ''
           completion.description = 'Enable the completion with: eval "$(my_command.rb completion)"'
 
-          completion.action do
-            executable_name = File.basename($PROGRAM_NAME)
+          completion.param :program_name
+
+          completion.action do |program_name: nil|
+            executable_name = program_name || File.basename($PROGRAM_NAME)
             puts <<~EOS
               function __atelier_completion() {
                 local cmd=$1

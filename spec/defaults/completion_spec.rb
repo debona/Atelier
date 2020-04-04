@@ -18,15 +18,26 @@ describe Atelier::Defaults::Completion do
       Atelier::Command.new(:cmd_name) {}
     end
 
+    let(:args) { [] }
+
     subject do
       printed = ''
       allow(STDOUT).to receive(:puts) { |output| printed << output }
-      command.run(:completion)
+      command.run(:completion, *args)
       printed
     end
 
     it 'outputs shellscript that enable the bash completion' do
-      is_expected.to match '^complete -o bashdefault -o default -F __completion__handler '
+      # As completion relies on $PROGRAM_NAME, it try to complete the `rspec` program
+      is_expected.to match '^complete -o bashdefault -o default -F __completion__handler "rspec"'
+    end
+
+    context do
+      let(:args) { ['foo'] }
+
+      it 'outputs shellscript that enable the bash completion for the given program_name' do
+        is_expected.to match '^complete -o bashdefault -o default -F __completion__handler "foo"'
+      end
     end
   end
 end
