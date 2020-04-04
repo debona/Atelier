@@ -7,7 +7,6 @@ module Atelier
     FACTORY_MAP = {
       help: Atelier::Defaults::Help,
       completion: Atelier::Defaults::Completion,
-      commands: Atelier::Defaults::Commands,
       complete: Atelier::Defaults::Complete,
     }
 

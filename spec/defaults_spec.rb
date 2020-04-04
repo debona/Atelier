@@ -4,7 +4,7 @@ require 'atelier/defaults'
 
 describe Atelier::Defaults do
   describe "::ALL" do
-    it { expect(subject::ALL).to eq [:help, :completion, :commands, :complete] }
+    it { expect(subject::ALL).to eq [:help, :completion, :complete] }
   end
 
   describe ".factory" do
