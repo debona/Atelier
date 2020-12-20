@@ -24,9 +24,9 @@ module Atelier
       root_command.run(*parameters)
     rescue Exception => e
       logger.error e
-      # TODO set exit status
+      # TODO set exit status?
+      e
     end
-
 
     def command_load_requested?
       !!@command_load_requester

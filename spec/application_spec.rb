@@ -38,12 +38,19 @@ describe Atelier::Application do
         subject.run('one', 'two', 'three')
       end
 
-      it 'logs an error on exception' do
+      context 'when there is an exception' do
         e = RuntimeError.new('an exception')
-        expect(root_command).to receive(:run) { raise e }
+        before { expect(root_command).to receive(:run) { raise e } }
 
-        expect(subject.logger).to receive(:error).with(e)
-        subject.run
+        it 'logs an error on exception' do
+          expect(subject.logger).to receive(:error).with(e)
+          subject.run
+        end
+
+        it 'returns the exception' do
+          expect(subject.logger).to receive(:error)
+          expect(subject.run).to eq e
+        end
       end
     end
   end
