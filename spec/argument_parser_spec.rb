@@ -17,7 +17,7 @@ describe Atelier::ArgumentParser do
   end
 
   describe '#parse' do
-    parameters = [:one, :two, :three, :four, :five]
+    let(:parameters) { [:one, :two, :three, :four, :five] }
     let(:argument_parser) { Atelier::ArgumentParser.new }
     subject { argument_parser.parse(parameters) }
 
@@ -29,6 +29,15 @@ describe Atelier::ArgumentParser do
 
       its([:first_param])  { is_expected.to eq :one }
       its([:second_param]) { is_expected.to eq :two }
+
+      context 'when there are not enough values to parse' do
+        let(:parameters) { [:one] }
+
+        its([:first_param])  { is_expected.to eq :one }
+        it 'omits the :second_param' do
+          is_expected.to_not include(:second_param)
+        end
+      end
     end
 
     context 'for variable arguments' do

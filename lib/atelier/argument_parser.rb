@@ -33,7 +33,7 @@ module Atelier
         parsed[name] = parameters.slice!(arity)
       end
 
-      parsed
+      parsed.compact
     end
   end
 end
