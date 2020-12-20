@@ -10,6 +10,8 @@ require 'rspec/its'
 require 'coveralls'
 Coveralls.wear!
 
+Dir["#{__dir__}/support/*.rb"].each { |f| require f }
+
 RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
   config.filter_run :focus
@@ -20,4 +22,7 @@ RSpec.configure do |config|
   # the seed, which is printed after each run.
   #     --seed 1234
   config.order = 'random'
+
+  # Make it easier to load fixtures
+  $LOAD_PATH << "#{__dir__}/fixtures"
 end

@@ -15,12 +15,19 @@ module Atelier
 
       if root_command.nil?
         application.define_root_command(name, options, &block)
-        application.run(*ARGV)
+        # Use at_exit instead?
+        application.run(*ARGV) if autorun_enabled?
       elsif application.command_load_requested?
         application.load_requested_command(name, options, &block)
       else
         raise "There already is a root command and there are no command loading requested."
       end
+    end
+
+    private
+
+    def autorun_enabled?
+      true
     end
   end
 end
