@@ -11,6 +11,8 @@ Gem::Specification.new do |s|
   s.files       = Dir['{lib}/**/*.rb', 'bin/*', '*.md']
   s.executables = Dir['bin/*'].collect { |executable| File.basename(executable) }
 
+  s.add_dependency 'logger'
+
   s.homepage    = 'http://rubygems.org/gems/atelier'
   s.license     = 'MIT'
 end
