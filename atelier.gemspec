@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'atelier'
   s.summary     = 'Ruby task'
-  s.description = 'A simple ruby task'
+  s.description = 'A simple ruby framework to structure helper scripts'
   s.authors     = ['Thomas DE BONA']
   s.email       = 'thomas.debona@gmail.com'
 
