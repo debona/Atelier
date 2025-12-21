@@ -19,7 +19,7 @@ describe Atelier::DefaultCommand do
     it "require the super_command keyword arg" do
       expect {
         described_class.new(:cmd_name)
-      }.to raise_error(ArgumentError, 'missing keyword: super_command')
+      }.to raise_error(ArgumentError, 'missing keyword: :super_command')
     end
 
     its(:title) { is_expected.to eq nil }
@@ -37,7 +37,7 @@ describe Atelier::DefaultCommand do
       it "prevent the defaults keyword arg" do
         expect {
           described_class.new(:cmd_name, super_command: super_command, defaults: ['help'])
-        }.to raise_error(ArgumentError, 'unknown keyword: defaults')
+        }.to raise_error(ArgumentError, 'unknown keyword: :defaults')
       end
 
       its(:name) { is_expected.to eq :cmd_name }

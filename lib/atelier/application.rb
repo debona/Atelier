@@ -48,7 +48,7 @@ module Atelier
     end
 
     def load_requested_command(name, **options, &block)
-      @command_load_requester.command(name, options, &block)
+      @command_load_requester.command(name, **options, &block)
     end
   end
 end

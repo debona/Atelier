@@ -20,7 +20,7 @@ module Atelier
 
     def command(cmd_name, **options, &block)
       options[:super_command] = self
-      sub_commands_hash[cmd_name] = Command.new(cmd_name, options, &block)
+      sub_commands_hash[cmd_name] = Command.new(cmd_name, **options, &block)
     end
   end
 end

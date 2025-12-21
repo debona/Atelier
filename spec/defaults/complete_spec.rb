@@ -50,8 +50,9 @@ describe Atelier::Defaults::Complete do
     end
 
     context 'with a file' do
-      expected_file = Dir['*'].first
-      let(:argv) { [expected_file[0..-2]] }
+      expected_file = __FILE__
+
+      let(:argv) { [expected_file[0..-5]] }
 
       it { is_expected.to match_array [expected_file] }
     end
