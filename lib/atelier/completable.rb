@@ -2,6 +2,10 @@
 module Atelier
   module Completable
 
+    def completable?
+      true
+    end
+
     def complete(*args)
       first = args.first
       penultimate = args[-2]
@@ -9,7 +13,7 @@ module Atelier
 
       # If the first args is perfectly matching a subcommand, delegate to this subcommand
       sub_command = sub_commands_hash[first&.to_sym]
-      if sub_command && sub_command.sub_command_names.include?(:complete)
+      if sub_command&.completable?
         args.shift
         return sub_command.complete(*args)
       end
