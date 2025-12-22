@@ -91,7 +91,7 @@ describe Atelier::Defaults::Complete do
 
       context 'begining with a sub command' do
         it 'forwards the completion to the matching sub command' do
-          expect(command.sub_commands_hash[:sub_command]).to receive(:run).with(:complete, '')
+          expect(command.sub_commands_hash[:sub_command]).to receive(:complete).with('')
           command.run(:complete, 'sub_command', '')
         end
       end

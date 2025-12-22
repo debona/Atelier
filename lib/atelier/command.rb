@@ -1,12 +1,14 @@
 require 'atelier/composable'
 require 'atelier/parameterable'
 require 'atelier/optionable'
+require 'atelier/completable'
 
 module Atelier
   class Command
     include Composable
     include Parameterable
     include Optionable
+    include Completable
 
     # Options
     attr_accessor :name,
