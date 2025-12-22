@@ -12,11 +12,11 @@ describe Atelier::Optionable do
       subject.option(:option_name, *opt_parser_args)
     end
 
-    context 'with a completion block' do
+    context 'with a completion Proc' do
       expected_proc = Proc.new { :very_expected_proc }
       switches = ['-a', '-b', '--long-a', '--long-b']
 
-      before { subject.option(:option_name, *switches, &expected_proc) }
+      before { subject.option(:option_name, *switches, completion: expected_proc) }
 
       describe 'its options_completions' do
         it { expect(subject.options_completions).to be_a Hash }
