@@ -36,8 +36,7 @@ module Atelier
     end
 
     def declared_switch_names
-      names = declared_switches.collect { |switch| [switch.long, switch.short] }
-      names.flatten
+      declared_switches.map { |switch| [switch.long, switch.short] }.flatten
     end
 
     def parse_options!(parameters)
