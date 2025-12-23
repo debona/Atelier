@@ -1,6 +1,9 @@
-
 module Atelier
   module Completable
+
+    def self.complete_files(file)
+      Dir[file + '*'] - ['.', '..']
+    end
 
     def completable?
       true
@@ -29,7 +32,8 @@ module Atelier
       possibilities += sub_command_names.select { |s| s.start_with?(last) } if args.size <= 1 # because the command can only be in first place
       possibilities += declared_switch_names.select { |s| s.start_with?(last) }
 
-      possibilities += Dir[last + '*'] - ['.', '..']
+      # TODO: should be params completion
+      possibilities += Atelier::Completable.complete_files(last)
 
       possibilities
     end

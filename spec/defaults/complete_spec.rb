@@ -15,86 +15,32 @@ describe Atelier::Defaults::Complete do
 
   describe "command behavior" do
     let(:command) do
-      Atelier::Command.new(:cmd_name) do |c|
-        c.option(:option, '-o', '--option OPT', 'test purpose option') { ["value1", "value2"] }
-        c.option(:option, '-a', '--alert ALERT', 'test purpose option')
-        c.command :sub_command do |s|
-          s.command :sub_sub_command do
-          end
-        end
-      end
+      Atelier::Command.new(:cmd_name) { }
     end
 
-    let(:argv) { [] }
+    let(:argv) { ['first', 'middle', 'last'] }
 
-    subject do
+    subject(:printed_completion) do
       printed = ''
       allow(STDOUT).to receive(:puts) { |output| printed << output }
       command.run(:complete, *argv)
-      printed.lines.map(&:strip)
+      printed
     end
 
-    # full_completion_list files
-    files  = Dir['*']
-    files -= ['.', '..']
+    let(:results) { ['result1', 'result2', 'result3'] }
 
-    # full_completion_list sub-commands
-    default_commands = Atelier::Defaults::ALL.map(&:to_s)
-    commands = ['sub_command']
-    options = ['-o', '--option', '-a', '--alert']
-
-    context 'without any args' do
-      let(:argv) { [] }
-
-      it { is_expected.to match_array files + default_commands + commands + options }
+    before do
+      allow(command).to receive(:complete).and_return(results)
     end
 
-    context 'with a file' do
-      expected_file = __FILE__
-
-      let(:argv) { [expected_file[0..-5]] }
-
-      it { is_expected.to match_array [expected_file] }
+    it "delegates to the complete method forwarding all args" do
+      printed_completion
+      expect(command).to have_received(:complete).with(*argv)
     end
 
-    context 'with an option' do
-      let(:argv) { ['--op'] }
-
-      it { is_expected.to match_array ['--option'] }
-    end
-
-    context 'with a sub command' do
-      let(:argv) { ['com'] }
-
-      it { is_expected.to match_array (files + default_commands + commands).grep(/^com/) }
-    end
-
-    context 'with several args' do
-
-      context 'begining with an option with a completion block' do
-        let(:argv) { ['--option', ''] }
-
-        it { is_expected.to match_array ["value1", "value2"] }
-      end
-
-      context 'begining with an option without completion block' do
-        let(:argv) { ['--alert', ''] }
-
-        it { is_expected.to match_array files + options }
-      end
-
-      context 'begining with NOT a sub command' do
-        let(:argv) { ['not_sub_command', ''] }
-
-        it { is_expected.to match_array files + options }
-      end
-
-      context 'begining with a sub command' do
-        it 'forwards the completion to the matching sub command' do
-          expect(command.sub_commands_hash[:sub_command]).to receive(:complete).with('')
-          command.run(:complete, 'sub_command', '')
-        end
-      end
+    it "puts all the complete results" do
+      expected_results = results.join("\n")
+      expect(printed_completion).to eq(expected_results)
     end
   end
 end
