@@ -7,14 +7,14 @@ describe Atelier::Parameterable do
 
   describe '#param' do
     it 'delegates the arguments parsing description' do
-      expect(subject.argument_parser).to receive(:param).with(:param_name)
+      expect(subject.argument_parser).to receive(:param).with(:param_name, completion: nil)
       subject.param(:param_name)
     end
   end
 
   describe '#params' do
     it 'delegates the arguments parsing description' do
-      expect(subject.argument_parser).to receive(:params).with(:param_name)
+      expect(subject.argument_parser).to receive(:params).with(:param_name, completion: nil)
       subject.params(:param_name)
     end
   end

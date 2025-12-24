@@ -3,12 +3,12 @@ require 'atelier/argument_parser'
 module Atelier
   module Parameterable
 
-    def param(param_name)
-      argument_parser.param(param_name)
+    def param(param_name, completion: nil)
+      argument_parser.param(param_name, completion:)
     end
 
-    def params(params_name)
-      argument_parser.params(params_name)
+    def params(params_name, completion: nil)
+      argument_parser.params(params_name, completion:)
     end
 
     def argument_parser
