@@ -19,7 +19,7 @@ GEM
     docile (1.4.1)
     io-console (0.8.2)
     json (2.18.0)
-    logger (1.6.4)
+    logger (1.7.0)
     mize (0.6.1)
     readline (0.0.4)
       reline
@@ -57,6 +57,7 @@ GEM
       sync
 
 PLATFORMS
+  arm64-darwin-23
   ruby
 
 DEPENDENCIES
@@ -67,5 +68,31 @@ DEPENDENCIES
   rspec-its
   rspec-mocks
 
+CHECKSUMS
+  atelier (0.0.0)
+  bigdecimal (4.0.1) sha256=8b07d3d065a9f921c80ceaea7c9d4ae596697295b584c296fe599dd0ad01c4a7
+  byebug (12.0.0) sha256=d4a150d291cca40b66ec9ca31f754e93fed8aa266a17335f71bb0afa7fca1a1e
+  coveralls (0.8.23) sha256=ac63872cc7ace7274f26f29caf4edabba6eb0bb3970627d83a1e76478b7564d7
+  diff-lcs (1.6.2) sha256=9ae0d2cba7d4df3075fe8cd8602a8604993efc0dfa934cff568969efb1909962
+  docile (1.4.1) sha256=96159be799bfa73cdb721b840e9802126e4e03dfc26863db73647204c727f21e
+  io-console (0.8.2) sha256=d6e3ae7a7cc7574f4b8893b4fca2162e57a825b223a177b7afa236c5ef9814cc
+  json (2.18.0) sha256=b10506aee4183f5cf49e0efc48073d7b75843ce3782c68dbeb763351c08fd505
+  logger (1.7.0) sha256=196edec7cc44b66cfb40f9755ce11b392f21f7967696af15d274dde7edff0203
+  mize (0.6.1) sha256=4031558979ff5426fda24c75a149b4e4c0faf4cacf2fae8938f83866ab94b780
+  readline (0.0.4) sha256=6138eef17be2b98298b672c3ea63bf9cb5158d401324f26e1e84f235879c1d6a
+  reline (0.6.3) sha256=1198b04973565b36ec0f11542ab3f5cfeeec34823f4e54cebde90968092b1835
+  rspec (3.13.2) sha256=206284a08ad798e61f86d7ca3e376718d52c0bc944626b2349266f239f820587
+  rspec-core (3.13.6) sha256=a8823c6411667b60a8bca135364351dda34cd55e44ff94c4be4633b37d828b2d
+  rspec-expectations (3.13.5) sha256=33a4d3a1d95060aea4c94e9f237030a8f9eae5615e9bd85718fe3a09e4b58836
+  rspec-its (2.0.0) sha256=a88e8bc38149f2835e93533591ec4f5c829aacbfd41269a2e6f9f5b82f5260df
+  rspec-mocks (3.13.7) sha256=0979034e64b1d7a838aaaddf12bf065ea4dc40ef3d4c39f01f93ae2c66c62b1c
+  rspec-support (3.13.6) sha256=2e8de3702427eab064c9352fe74488cc12a1bfae887ad8b91cba480ec9f8afb2
+  simplecov (0.16.1) sha256=8724f0911bbb2b7a3c11155e6d57987cad311f9e5ce7b305b1e2e67fdc73dee9
+  simplecov-html (0.10.2) sha256=f65306e2695913c007ddc8d31d6318f37ae074f2ee1cea1647b3bf4c94ca30d2
+  sync (0.5.0) sha256=668356cc07c59ac7ed9ecf34fec3929831f179c07adb1f3e1c3b7a1609a638fd
+  term-ansicolor (1.11.3) sha256=8c01ec3abd095eb94dca8aed5a127d36e594239eb525eb306259c9e930534603
+  thor (1.4.0) sha256=8763e822ccb0f1d7bee88cde131b19a65606657b847cc7b7b4b82e772bcd8a3d
+  tins (1.51.0) sha256=9f83c534bfca23973c5e641308828d71d5ffa79fc32c0ef90996efa699d0696f
+
 BUNDLED WITH
-  4.0.2
+  4.0.3
